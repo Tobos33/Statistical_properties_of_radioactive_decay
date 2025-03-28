@@ -9,7 +9,7 @@ import java.awt.event.ActionListener;
 
 public class GUI extends JFrame {
     public GUI() throws HeadlessException{
-        this.setSize(1600,480);
+        this.setSize(1600,900);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
     public static void main(String[] args) {
