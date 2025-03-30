@@ -17,7 +17,8 @@ import java.awt.event.ActionListener;
 import java.util.Hashtable;
 
 public class GUI extends JFrame {
-
+    String[] atomList = {"węgiel" , "uran_235"};
+    String[] timeList = {"sekund", "minut", "godzin", "tygodni", "miesięcy", "lat"};
     JPanel startPanel;
     JPanel optionsPanel;
     JPanel histogramsPanel;
@@ -37,7 +38,12 @@ public class GUI extends JFrame {
     JMenuItem itemOpen;
     JMenuItem itemDataColor;
     JCheckBoxMenuItem itemChartBackgroundGrid;
-
+    JComboBox comboNucleChoser;
+    JLabel labelRadioactiveConstant;
+    JLabel labelHalfTime;
+    JLabel time;
+    JTextField textNumber;
+    JComboBox comboTimeChoser;
     JSlider sliderTimeHop;
     JSlider sliderStartNucle;
     JFreeChart chartParticleNumber;
@@ -60,7 +66,7 @@ public class GUI extends JFrame {
         this.add(optionsPanel, BorderLayout.CENTER);
         this.add(histogramsPanel, BorderLayout.WEST);
 
-        optionsPanel.setLayout(new GridLayout(6, 1));
+        optionsPanel.setLayout(new GridLayout(5, 1));
         histogramsPanel.setLayout(new GridLayout(2, 1));
 
         histogramsPanel.setPreferredSize(new java.awt.Dimension(800, 2*350));
@@ -151,10 +157,57 @@ public class GUI extends JFrame {
         histogramsPanel.add(chartPanel2);
 
 
-        optionsPanel.add(new JPanel());
-        optionsPanel.add(new JPanel());
-        optionsPanel.add(new JPanel());
-        optionsPanel.add(new JPanel()); // DO USUNIECIA NARAZIE PRZESUWA MI sliderTimeHop na (5,1) w gridLayout
+        JPanel nucleChoserPanel = new JPanel();
+        optionsPanel.add(nucleChoserPanel);
+        nucleChoserPanel.setLayout(new BorderLayout());
+        comboNucleChoser = new JComboBox(atomList);
+        JPanel labelNucleChoserPanel = new JPanel();
+        labelNucleChoserPanel.setLayout(new FlowLayout());
+        JLabel labelNucleChoser = new JLabel("Wybierz nuklid (domyślnie węgiel):");
+        nucleChoserPanel.add(labelNucleChoserPanel, BorderLayout.NORTH);
+        labelNucleChoserPanel.add(labelNucleChoser);
+        JPanel comboNucleChoserPanel = new JPanel();
+        comboNucleChoserPanel.setLayout(new FlowLayout());
+        nucleChoserPanel.add(comboNucleChoserPanel, BorderLayout.CENTER);
+        comboNucleChoserPanel.add(comboNucleChoser);
+        comboNucleChoser.setPreferredSize( new Dimension(250, 25));
+
+
+        JPanel constantPanel = new JPanel();
+        optionsPanel.add(constantPanel);
+        constantPanel.setLayout(new GridLayout(2, 1));
+        JPanel tempPanelConst = new JPanel();
+        tempPanelConst.setLayout(new FlowLayout());
+        constantPanel.add(tempPanelConst);
+        JPanel tempPanelConst1 = new JPanel();
+        tempPanelConst1.setLayout(new FlowLayout());
+        constantPanel.add(tempPanelConst1);
+        labelRadioactiveConstant = new JLabel("Stała rozpadu promieniotwórczego: λ = ");
+        tempPanelConst.add(labelRadioactiveConstant);
+        labelHalfTime = new JLabel("Czas połowicznego rozpadu: T = ");
+        tempPanelConst1.add(labelHalfTime);
+
+
+
+        JPanel timePanel = new JPanel();
+        timePanel.setLayout(new BorderLayout());
+        optionsPanel.add(timePanel);
+        time = new JLabel("Czas");
+        JPanel tempPanel = new JPanel();
+        tempPanel.setLayout(new FlowLayout());
+        tempPanel.add(time);
+        timePanel.add(tempPanel, BorderLayout.NORTH);
+
+        JPanel timeChoserPanel = new JPanel();
+        timeChoserPanel.setLayout(new FlowLayout());
+        timePanel.add(timeChoserPanel, BorderLayout.CENTER);
+        textNumber = new JTextField("100");
+        textNumber.setPreferredSize(new Dimension(150, 50));
+        timeChoserPanel.add(textNumber);
+        comboTimeChoser = new JComboBox(timeList);
+        comboTimeChoser.setPreferredSize(new Dimension(200, 50));
+        timeChoserPanel.add(comboTimeChoser);
+
 
 
 
