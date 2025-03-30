@@ -37,6 +37,7 @@ public class GUI extends JFrame {
     JMenuItem itemOpen;
     JMenuItem itemDataColor;
     JCheckBoxMenuItem itemChartBackgroundGrid;
+
     JSlider sliderTimeHop;
     JSlider sliderStartNucle;
     JFreeChart chartParticleNumber;
@@ -56,7 +57,7 @@ public class GUI extends JFrame {
         timePanel = new JPanel();
 
         this.add(startPanel, BorderLayout.SOUTH);
-        this.add(optionsPanel, BorderLayout.EAST);
+        this.add(optionsPanel, BorderLayout.CENTER);
         this.add(histogramsPanel, BorderLayout.WEST);
 
         optionsPanel.setLayout(new GridLayout(6, 1));
@@ -151,26 +152,59 @@ public class GUI extends JFrame {
 
 
         optionsPanel.add(new JPanel());
-        optionsPanel.add(new JPanel()); // DO USUNIECIA NARAZIE PRZESUWA MI sliderStartNucle na (3,1) w gridLayout
+        optionsPanel.add(new JPanel());
+        optionsPanel.add(new JPanel());
+        optionsPanel.add(new JPanel()); // DO USUNIECIA NARAZIE PRZESUWA MI sliderTimeHop na (5,1) w gridLayout
+
+
+
         sliderTimeHop = new JSlider(10,1000,500 );
         sliderTimeHop.setMajorTickSpacing(50);
         sliderTimeHop.setPaintTicks(true);
         Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
         labelTable.put(10, new JLabel("10"));
+        labelTable.put(500, new JLabel("500"));
         labelTable.put(1000, new JLabel("1000"));
         sliderTimeHop.setLabelTable(labelTable);
         sliderTimeHop.setPaintLabels(true);
-        optionsPanel.add(sliderTimeHop);
+        //sliderTimeHop.setPreferredSize(new Dimension(425, 70));
+        JPanel timeHopPanel = new JPanel();
+        timeHopPanel.setLayout(new BorderLayout());
+        optionsPanel.add(timeHopPanel);
+        JLabel labelTimeHop = new JLabel("Liczba skoków czasowych");
+        JLabel labelTimeHop1 = new JLabel("Szybki wykres");
+        JLabel labelTimeHop2 = new JLabel("Dokładny wykres");
+        JPanel labelTimeHopPanel = new JPanel();
+        labelTimeHopPanel.setLayout(new FlowLayout());
+        timeHopPanel.add(labelTimeHopPanel, BorderLayout.NORTH);
+        labelTimeHopPanel.add(labelTimeHop);
+        timeHopPanel.add(sliderTimeHop, BorderLayout.CENTER);
+        timeHopPanel.add(labelTimeHop1, BorderLayout.WEST);
+        timeHopPanel.add(labelTimeHop2, BorderLayout.EAST);
 
-        sliderStartNucle = new JSlider(10,1000,500 );    //TRZEBA BEDZIE MNOZYC TE WARTOSCI ZE SLIDERA x1000
-        sliderStartNucle.setMajorTickSpacing(50);
+        sliderStartNucle = new JSlider(4,8,6 );    //TRZEBA BEDZIE podnosić 10 do potegi sczytanej ze slidera
+        sliderStartNucle.setMajorTickSpacing(1);
         sliderStartNucle.setPaintTicks(true);
         Hashtable<Integer, JLabel> labelTable1 = new Hashtable<>();
-        labelTable1.put(10, new JLabel("10e4"));
-        labelTable1.put(1000, new JLabel("10e6"));
+        labelTable1.put(4, new JLabel("10e4"));
+        labelTable1.put(6, new JLabel("10e6"));
+        labelTable1.put(8, new JLabel("10e8"));
         sliderStartNucle.setLabelTable(labelTable1);
         sliderStartNucle.setPaintLabels(true);
-        optionsPanel.add(sliderStartNucle);
+        JPanel startNuclePanel = new JPanel();
+        startNuclePanel.setLayout(new BorderLayout());
+        optionsPanel.add(startNuclePanel);
+        JLabel labelStartNucle  = new JLabel("Początkowa liczba nuklidów");
+        //JLabel labelStartNucle1  = new JLabel("                        ");
+        //JLabel labelStartNucle2  = new JLabel("              ");
+        JPanel labelStartNuclePanel = new JPanel();
+        labelStartNuclePanel.setLayout(new FlowLayout());
+        startNuclePanel.add(labelStartNuclePanel, BorderLayout.NORTH);
+        labelStartNuclePanel.add(labelStartNucle);
+        startNuclePanel.add(sliderStartNucle, BorderLayout.CENTER);
+        //startNuclePanel.add(labelStartNucle1, BorderLayout.EAST);
+        //startNuclePanel.add(labelStartNucle2, BorderLayout.WEST);
+
 
 
     }
