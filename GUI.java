@@ -175,7 +175,12 @@ public class GUI extends JFrame {
 
     }
     public static void main(String[] args) {
-        GUI Frame = new GUI();
-        Frame.setVisible(true);
+        SwingUtilities.invokeLater(new Runnable(){
+            public void run() {
+                GUI Frame = new GUI();
+                Frame.setVisible(true);
+            }
+        });
+
     }
 }
