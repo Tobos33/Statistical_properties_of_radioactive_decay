@@ -10,14 +10,21 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-
+import java.lang.Math;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Hashtable;
+import java.util.*;
+import java.util.List;
+import javax.swing.text.*;
+import java.text.*;
 
 public class GUI extends JFrame {
-    String[] atomList = {"węgiel" , "uran_235"};
+    List<String> atomsList;
+    List<Double> atomsLambdaConst;
+    Map<String,Double> mapLambdaConst;
+    List<String> atomsHalfTime;
+    Map<String,String> mapHalfTime;
     String[] timeList = {"sekund", "minut", "godzin", "tygodni", "miesięcy", "lat"};
     JPanel startPanel;
     JPanel optionsPanel;
@@ -40,16 +47,26 @@ public class GUI extends JFrame {
     JCheckBoxMenuItem itemChartBackgroundGrid;
     JComboBox comboNucleChoser;
     JLabel labelRadioactiveConstant;
+    JLabel labelLambda;
     JLabel labelHalfTime;
+    JLabel labelT;
     JLabel time;
     JTextField textNumber;
     JComboBox comboTimeChoser;
+    JLabel sliderValueTimeHop;
     JSlider sliderTimeHop;
+    JLabel sliderValueStartNucle;
     JSlider sliderStartNucle;
     JFreeChart chartParticleNumber;
     JFreeChart chartActivity;
+    Double userLambdaConst;
+    String userTimeRange;
+    Float userTimeNumber;
+    Integer userTimeHop;
+    Double userStartNucle;
 
-
+    ChartPanel chartPanel2;
+    ChartPanel chartPanel1;
     public GUI() throws HeadlessException{
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -95,7 +112,23 @@ public class GUI extends JFrame {
         menuChartCustom.add(itemDataColor);
 
         itemChartBackgroundGrid = new JCheckBoxMenuItem("Siatka w tle");
+        itemChartBackgroundGrid.setSelected(true);
         menuChartCustom.add(itemChartBackgroundGrid);
+
+        itemChartBackgroundGrid.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                boolean selected = itemChartBackgroundGrid.isSelected();
+                XYPlot plotActivity = chartActivity.getXYPlot();
+                XYPlot plotParticleNumber = chartParticleNumber.getXYPlot();
+
+                plotActivity.setDomainGridlinesVisible(selected);
+                plotActivity.setRangeGridlinesVisible(selected);
+                plotParticleNumber.setDomainGridlinesVisible(selected);
+                plotParticleNumber.setRangeGridlinesVisible(selected);
+                chartPanel1.repaint();
+                chartPanel2.repaint();
+            }
+        });
 
         itemNew = new JMenuItem("Nowy");
         menu.add(itemNew);
@@ -156,11 +189,35 @@ public class GUI extends JFrame {
         histogramsPanel.add(chartPanel1);
         histogramsPanel.add(chartPanel2);
 
+        //LISTA PIERWIASTKOW I STAŁE
+
+        atomsList = new ArrayList<String>();
+        atomsList.add("węgiel C14");
+        atomsList.add("uran-238");
+
+        atomsLambdaConst = new ArrayList<Double>();
+        atomsLambdaConst.add(3.9*Math.pow(10,-12));
+        atomsLambdaConst.add(5.0*Math.pow(10,-18));
+
+        mapLambdaConst = new HashMap<String, Double>();
+        for(int i= 0; i<atomsList.size();i++){
+            mapLambdaConst.put(atomsList.get(i), atomsLambdaConst.get(i));
+        }
+
+        atomsHalfTime = new ArrayList<String>();
+        atomsHalfTime.add("5570 lat");
+        atomsHalfTime.add("4.5xE9 lat");
+
+        mapHalfTime = new HashMap<String, String>();
+        for(int i= 0; i<atomsList.size();i++){
+            mapHalfTime.put(atomsList.get(i), atomsHalfTime.get(i));
+        }
+        //koniec LISTA PIERWIASTKO I STALE
 
         JPanel nucleChoserPanel = new JPanel();
         optionsPanel.add(nucleChoserPanel);
         nucleChoserPanel.setLayout(new BorderLayout());
-        comboNucleChoser = new JComboBox(atomList);
+        comboNucleChoser = new JComboBox(new Vector(mapLambdaConst.keySet()));
         JPanel labelNucleChoserPanel = new JPanel();
         labelNucleChoserPanel.setLayout(new FlowLayout());
         JLabel labelNucleChoser = new JLabel("Wybierz nuklid (domyślnie węgiel):");
@@ -171,6 +228,25 @@ public class GUI extends JFrame {
         nucleChoserPanel.add(comboNucleChoserPanel, BorderLayout.CENTER);
         comboNucleChoserPanel.add(comboNucleChoser);
         comboNucleChoser.setPreferredSize( new Dimension(250, 25));
+
+        labelLambda = new JLabel( Double.toString(mapLambdaConst.get("węgiel C14")));
+        userLambdaConst = mapLambdaConst.get("węgiel C14"); // DOMYSLNIE WEGIEL MA BYC WYBRANY
+        labelT = new JLabel(mapHalfTime.get("węgiel C14"));
+        comboNucleChoser.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String key = (String) comboNucleChoser.getSelectedItem();
+                if (key != null) {
+                    userLambdaConst = mapLambdaConst.get(key);
+                    labelLambda.setText(userLambdaConst != null
+                            ? userLambdaConst.toString()
+                            : "N/A"
+                    );
+                    labelT.setText(mapHalfTime.get(key));
+                }
+            }
+        });
 
 
         JPanel constantPanel = new JPanel();
@@ -184,8 +260,10 @@ public class GUI extends JFrame {
         constantPanel.add(tempPanelConst1);
         labelRadioactiveConstant = new JLabel("Stała rozpadu promieniotwórczego: λ = ");
         tempPanelConst.add(labelRadioactiveConstant);
+        tempPanelConst.add(labelLambda);
         labelHalfTime = new JLabel("Czas połowicznego rozpadu: T = ");
         tempPanelConst1.add(labelHalfTime);
+        tempPanelConst1.add(labelT);
 
 
 
@@ -198,18 +276,34 @@ public class GUI extends JFrame {
         tempPanel.add(time);
         timePanel.add(tempPanel, BorderLayout.NORTH);
 
+
+
         JPanel timeChoserPanel = new JPanel();
         timeChoserPanel.setLayout(new FlowLayout());
         timePanel.add(timeChoserPanel, BorderLayout.CENTER);
-        textNumber = new JTextField("100");
+        textNumber = new JTextField("10");
         textNumber.setPreferredSize(new Dimension(150, 50));
         timeChoserPanel.add(textNumber);
         comboTimeChoser = new JComboBox(timeList);
+        comboTimeChoser.setSelectedIndex(0);
         comboTimeChoser.setPreferredSize(new Dimension(200, 50));
         timeChoserPanel.add(comboTimeChoser);
 
+        userTimeRange = timeList[0];
+        comboTimeChoser.addActionListener(new ActionListener() {
 
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                userTimeRange = comboTimeChoser.getSelectedItem().toString();
+            }
+        });
+        textNumber.addActionListener(new ActionListener() {
 
+            @Override
+            public void actionPerformed(ActionEvent e) {
+              //  userTimeNumber =  textNumber.getText(); DO NAPRAWIENIA, string na float sie nie skonwertuje
+            }
+        });
 
         sliderTimeHop = new JSlider(10,1000,500 );
         sliderTimeHop.setMajorTickSpacing(50);
@@ -220,20 +314,26 @@ public class GUI extends JFrame {
         labelTable.put(1000, new JLabel("1000"));
         sliderTimeHop.setLabelTable(labelTable);
         sliderTimeHop.setPaintLabels(true);
+        sliderTimeHop.addChangeListener(new SliderTimeHopChangeListener());
         //sliderTimeHop.setPreferredSize(new Dimension(425, 70));
         JPanel timeHopPanel = new JPanel();
         timeHopPanel.setLayout(new BorderLayout());
         optionsPanel.add(timeHopPanel);
         JLabel labelTimeHop = new JLabel("Liczba skoków czasowych");
+        sliderValueTimeHop = new JLabel(String.format("%d", sliderTimeHop.getValue()));
+        userTimeHop = sliderTimeHop.getValue();
         JLabel labelTimeHop1 = new JLabel("Szybki wykres");
         JLabel labelTimeHop2 = new JLabel("Dokładny wykres");
         JPanel labelTimeHopPanel = new JPanel();
         labelTimeHopPanel.setLayout(new FlowLayout());
         timeHopPanel.add(labelTimeHopPanel, BorderLayout.NORTH);
         labelTimeHopPanel.add(labelTimeHop);
+        labelTimeHopPanel.add(sliderValueTimeHop);
         timeHopPanel.add(sliderTimeHop, BorderLayout.CENTER);
         timeHopPanel.add(labelTimeHop1, BorderLayout.WEST);
         timeHopPanel.add(labelTimeHop2, BorderLayout.EAST);
+
+
 
         sliderStartNucle = new JSlider(4,8,6 );    //TRZEBA BEDZIE podnosić 10 do potegi sczytanej ze slidera
         sliderStartNucle.setMajorTickSpacing(1);
@@ -244,21 +344,44 @@ public class GUI extends JFrame {
         labelTable1.put(8, new JLabel("10e8"));
         sliderStartNucle.setLabelTable(labelTable1);
         sliderStartNucle.setPaintLabels(true);
+        sliderStartNucle.addChangeListener(new SliderStartNucleChangeListener());
         JPanel startNuclePanel = new JPanel();
         startNuclePanel.setLayout(new BorderLayout());
         optionsPanel.add(startNuclePanel);
-        JLabel labelStartNucle  = new JLabel("Początkowa liczba nuklidów");
+        JLabel labelStartNucle  = new JLabel("Początkowa liczba nuklidów:");
+        sliderValueStartNucle = new JLabel("10e" + String.format("%d", sliderStartNucle.getValue()));
         //JLabel labelStartNucle1  = new JLabel("                        ");
         //JLabel labelStartNucle2  = new JLabel("              ");
         JPanel labelStartNuclePanel = new JPanel();
         labelStartNuclePanel.setLayout(new FlowLayout());
         startNuclePanel.add(labelStartNuclePanel, BorderLayout.NORTH);
         labelStartNuclePanel.add(labelStartNucle);
+        labelStartNuclePanel.add(sliderValueStartNucle);
         startNuclePanel.add(sliderStartNucle, BorderLayout.CENTER);
         //startNuclePanel.add(labelStartNucle1, BorderLayout.EAST);
         //startNuclePanel.add(labelStartNucle2, BorderLayout.WEST);
 
 
+
+    }
+    public class SliderStartNucleChangeListener implements ChangeListener{
+
+        @Override
+        public void stateChanged(ChangeEvent arg0) {
+            String value = String.format("%d", sliderStartNucle.getValue());
+            sliderValueStartNucle.setText("10e" + value);
+            userStartNucle = Math.pow(10,sliderStartNucle.getValue());
+        };
+
+    }
+    public class SliderTimeHopChangeListener implements ChangeListener{
+
+        @Override
+        public void stateChanged(ChangeEvent arg0) {
+            String value = String.format("%d", sliderTimeHop.getValue());
+            sliderValueTimeHop.setText(value);
+            userTimeHop = sliderTimeHop.getValue();
+        };
 
     }
     public static void main(String[] args) {
