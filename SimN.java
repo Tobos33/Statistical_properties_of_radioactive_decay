@@ -26,8 +26,9 @@ public class SimN extends JPanel implements Runnable {
     XYSeriesCollection Ncollection;
 
     double dt;
-    List<Double> N = new ArrayList<>();
-    List<Double> R = new ArrayList<>();
+    static List<Double> N = new ArrayList<>();
+    static List<Double> R = new ArrayList<>();
+    static List<Double> T = new ArrayList<>();
     ChartPanel chartPanel1;
     ChartPanel chartPanel2;
 
@@ -46,10 +47,10 @@ public class SimN extends JPanel implements Runnable {
 
 
     public void run() {
-        try{
-            dt = GUI.mapTimediv.get(GUI.userTimeRange)*Double.parseDouble(GUI.textNumber.getText())/GUI.userTimeHop;
-        }
-        catch(NumberFormatException exception){
+
+        try {
+            dt = GUI.mapTimediv.get(GUI.userTimeRange) * Double.parseDouble(GUI.textNumber.getText()) / GUI.userTimeHop;
+        } catch (NumberFormatException exception) {
             GUI.textNumber.setText("Wrong number format.");
         }
 
@@ -61,17 +62,20 @@ public class SimN extends JPanel implements Runnable {
         Ncollection.addSeries(Nseries);
         CalculationN();
 
-        for (int i = 0; i < GUI.userTimeHop+1; i++) {
+        for (int i = 0; i < GUI.userTimeHop + 1; i++) {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                break;
             }
-            Rseries.add(dt * i/GUI.mapTimediv.get(GUI.userTimeRange), R.get(i));
-            Nseries.add(dt * i/GUI.mapTimediv.get(GUI.userTimeRange), N.get(i));
+            T.add(dt*i);
+            Rseries.add(dt * i / GUI.mapTimediv.get(GUI.userTimeRange), R.get(i));
+            Nseries.add(dt * i / GUI.mapTimediv.get(GUI.userTimeRange), N.get(i));
             chartPanel1.repaint();
         }
         print();
+
+
     }
 
 
@@ -93,7 +97,7 @@ public class SimN extends JPanel implements Runnable {
             }
             if(Np >0) {
                 Np = Np - k;
-                Rp = k/dt;
+                Rp = k/dt*Math.pow(10, 9);
                 R.add(Rp);
                 N.add(Np);
             }
@@ -107,7 +111,7 @@ public class SimN extends JPanel implements Runnable {
     }
 
     public void print() {
-        System.out.println(R);
+        System.out.println(N);
     }
 
 }

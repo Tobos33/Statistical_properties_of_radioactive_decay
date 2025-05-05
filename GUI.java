@@ -27,17 +27,20 @@ import static Main.SimN.chartParticleNumber;
 import static Main.SimN.chartActivity;
 
 public class GUI extends JFrame {
+    SimN simulation;
+    Thread simThread;
+    static boolean running = true;
     static List<String> atomsList;
     List<Double> atomsLambdaConst;
     static HashMap<String, Double> mapLambdaConst;
-    static HashMap<String, Integer> mapTimediv = new HashMap<String, Integer>();
+    static HashMap<String, Double> mapTimediv = new HashMap<String, Double>();
     List<String> atomsHalfTime;
     HashMap<String,String> mapHalfTime;
-    Integer[] Timediv =   {1,       60,      3600,     7*24*3600, 30*24*3600, 365*24*3600};
-    String[] timeList = {"sekund", "minut", "godzin", "tygodni", "miesięcy", "lat"};
+    Double[] Timediv =   {1.0,     60.0,    3600.0,   7*24*3600.0, 30*24*3600.0, 365*24*3600.0, (365*24*3600*Math.pow(10, 6))};
+    String[] timeList = {"sekund", "minut", "godzin", "tygodni", "miesięcy", "lat", "miliony lat"};
     JPanel startPanel;
     JPanel optionsPanel;
-    JPanel histogramsPanel;
+    static JPanel histogramsPanel;
     JPanel timePanel;
     JButton start;
     JButton stop;
@@ -47,9 +50,9 @@ public class GUI extends JFrame {
     JMenu subMenuSaveData;
     JMenu subMenuSaveChart;
     JMenuItem itemNew;
-    JMenuItem itemSaveData;
+    static JMenuItem itemSaveData;
     JMenuItem itemSaveDataSQL;
-    JMenuItem itemSaveChart;
+    static JMenuItem itemSaveChart;
     JMenuItem itemSaveChartSQL;
     JMenuItem itemOpen;
     JMenuItem itemDataColor;
@@ -99,6 +102,7 @@ public class GUI extends JFrame {
         start = new JButton("Start");
 
         stop = new JButton("Stop");
+        stop.addActionListener(e -> simThread.interrupt());
         start.setBackground(Color.green);
         stop.setBackground(Color.red);
         start.setPreferredSize(new Dimension(200, 50));
@@ -138,6 +142,8 @@ public class GUI extends JFrame {
             }
         });
 
+
+
         itemNew = new JMenuItem("Nowy");
         menu.add(itemNew);
 
@@ -162,6 +168,8 @@ public class GUI extends JFrame {
         itemOpen = new JMenuItem("Otwórz");
         menu.add(itemOpen);
 
+        save savingCharts = new save();
+
 
         chartParticleNumber = ChartFactory.createXYLineChart(
                 "Liczba pozostałych nuklidów w czasie",
@@ -179,8 +187,8 @@ public class GUI extends JFrame {
 
         chartActivity = ChartFactory.createXYLineChart(
                 "Wykres aktywności promieniotwórczej próbki od czasu",
-                "t",
-                "R",
+                "t "+ userTimeRange,
+                "R [nBq]",
                 new XYSeriesCollection(),
                 PlotOrientation.VERTICAL,
                 true,
@@ -203,8 +211,8 @@ public class GUI extends JFrame {
         atomsList.add("uran-238");
 
         atomsLambdaConst = new ArrayList<Double>();
-        atomsLambdaConst.add(Math.log(2)/(5.57*3.6*2.4*3.65)*Math.pow(10, -9));
-        atomsLambdaConst.add(0.5);
+        atomsLambdaConst.add(Math.log(2)/(5.57*3.6*2.4*3.65));
+        atomsLambdaConst.add(Math.log(2)/(4.5*3.6*2.4*3.65)*Math.pow(10,-6)); //9+3+1+2 = 15 zer
 
         mapLambdaConst = new HashMap<String, Double>();
         for(int i= 0; i<atomsList.size();i++){
@@ -240,7 +248,7 @@ public class GUI extends JFrame {
         comboNucleChoserPanel.add(comboNucleChoser);
         comboNucleChoser.setPreferredSize( new Dimension(250, 25));
 
-        labelLambda = new JLabel(String.valueOf((mapLambdaConst.get("węgiel C14").toString())));
+        labelLambda = new JLabel(String.valueOf((mapLambdaConst.get("węgiel C14")*Math.pow(10, -9))));
         userLambdaConst = mapLambdaConst.get("węgiel C14"); // DOMYSLNIE WEGIEL MA BYC WYBRANY
         labelT = new JLabel(mapHalfTime.get("węgiel C14"));
         comboNucleChoser.addActionListener(new ActionListener() {
@@ -250,10 +258,7 @@ public class GUI extends JFrame {
                 String key = (String) comboNucleChoser.getSelectedItem();
                 if (key != null) {
                     userLambdaConst = mapLambdaConst.get(key);
-                    /*labelLambda.setText((userLambdaConst != null
-                            ? userLambdaConst.toString()
-                            : "N/A"
-                    );*/
+                    labelLambda.setText(String.valueOf(mapLambdaConst.get(key)*Math.pow(10, -9)));
                     labelT.setText(mapHalfTime.get(key));
                 }
             }
@@ -399,8 +404,10 @@ public class GUI extends JFrame {
 
     public void startSimulation() {
         SimN simulation = new SimN(chartPanel1, chartPanel2);
-        Thread simThread = new Thread(simulation);
+        simThread = new Thread(simulation);
         simThread.start();
+
+
     }
 
     public static void main(String[] args) {
