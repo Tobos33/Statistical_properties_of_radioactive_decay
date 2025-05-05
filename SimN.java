@@ -46,7 +46,13 @@ public class SimN extends JPanel implements Runnable {
 
 
     public void run() {
-        dt = GUI.mapTimediv.get(GUI.userTimeRange)*Double.parseDouble(GUI.textNumber.getText())/GUI.userTimeHop;
+        try{
+            dt = GUI.mapTimediv.get(GUI.userTimeRange)*Double.parseDouble(GUI.textNumber.getText())/GUI.userTimeHop;
+        }
+        catch(NumberFormatException exception){
+            GUI.textNumber.setText("Wrong number format.");
+        }
+
         Rseries = new XYSeries("R(t)");
         Nseries = new XYSeries("N(t)");
         Rcollection.removeAllSeries();
@@ -70,9 +76,10 @@ public class SimN extends JPanel implements Runnable {
 
 
     public void CalculationN() {
+
         dt = GUI.mapTimediv.get(GUI.userTimeRange)*Double.parseDouble(GUI.textNumber.getText())/GUI.userTimeHop;
         R0 = GUI.userLambdaConst*GUI.userStartNucle*Math.pow(10, -9);
-        R.add(R0);
+        R.add(0.0);
         N.add(GUI.userStartNucle);
         double los;
 

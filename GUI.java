@@ -70,7 +70,7 @@ public class GUI extends JFrame {
     static String userTimeRange;
     static double userTimeNumber = 10.0;
     static int userTimeHop;
-    static double userStartNucle = 1000.0;
+    static double userStartNucle = 100000.0;
 
     ChartPanel chartPanel2;
     ChartPanel chartPanel1;
@@ -190,26 +190,20 @@ public class GUI extends JFrame {
 
         Border chartborder = BorderFactory.createLineBorder(Color.BLACK, 1);
 
-        //chartPanel1.setPreferredSize(new java.awt.Dimension(800, 350));
-
         chartPanel2 = new ChartPanel(chartActivity);
         chartPanel2.setBorder(chartborder);
-        //chartPanel2.setPreferredSize(new java.awt.Dimension(800, 350));
 
         histogramsPanel.add(chartPanel1);
         histogramsPanel.add(chartPanel2);
-        SimN ChartN = new SimN(chartPanel1, chartPanel2);
 
         start.addActionListener(e -> startSimulation());
-
-        //LISTA PIERWIASTKOW I STAŁE
 
         atomsList = new ArrayList<String>();
         atomsList.add("węgiel C14");
         atomsList.add("uran-238");
 
         atomsLambdaConst = new ArrayList<Double>();
-        atomsLambdaConst.add(Math.log(2)/(5.57*3.6*2.4*3.65));
+        atomsLambdaConst.add(Math.log(2)/(5.57*3.6*2.4*3.65)*Math.pow(10, -9));
         atomsLambdaConst.add(0.5);
 
         mapLambdaConst = new HashMap<String, Double>();
@@ -230,7 +224,6 @@ public class GUI extends JFrame {
             mapTimediv.put(timeList[i], Timediv[i]);
         }
 
-        //koniec LISTA PIERWIASTKO I STALE
 
         JPanel nucleChoserPanel = new JPanel();
         optionsPanel.add(nucleChoserPanel);
@@ -315,13 +308,13 @@ public class GUI extends JFrame {
                 userTimeRange = comboTimeChoser.getSelectedItem().toString();
             }
         });
-        textNumber.addActionListener(new ActionListener() {
+        /*textNumber.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
                 userTimeNumber =  Double.parseDouble(textNumber.getText()); //DO NAPRAWIENIA, string na float sie nie skonwertuje
             }
-        });
+        });*/
 
         sliderTimeHop = new JSlider(10,100,55 );
         sliderTimeHop.setMajorTickSpacing(10);
@@ -405,7 +398,7 @@ public class GUI extends JFrame {
     }
 
     public void startSimulation() {
-        SimN simulation = new SimN(chartPanel1, chartPanel2); // chartPanel1 musi być zdefiniowany w GUI
+        SimN simulation = new SimN(chartPanel1, chartPanel2);
         Thread simThread = new Thread(simulation);
         simThread.start();
     }
