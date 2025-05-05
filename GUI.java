@@ -28,7 +28,6 @@ import static Main.SimN.chartActivity;
 
 public class GUI extends JFrame {
     Thread simThread;
-    static boolean running = true;
     static List<String> atomsList;
     List<Double> atomsLambdaConst;
     static HashMap<String, Double> mapLambdaConst;
@@ -187,7 +186,7 @@ public class GUI extends JFrame {
 
         chartActivity = ChartFactory.createXYLineChart(
                 "Wykres aktywności promieniotwórczej próbki od czasu",
-                "t "+ userTimeRange,
+                "t ",
                 "R [nBq]",
                 new XYSeriesCollection(),
                 PlotOrientation.VERTICAL,

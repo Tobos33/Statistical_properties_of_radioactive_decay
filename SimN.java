@@ -16,7 +16,7 @@ import static Main.GUI.sliderStartNucle;
 import static java.lang.Math.abs;
 
 public class SimN extends JPanel implements Runnable {
-    Double R0 = GUI.userLambdaConst* Math.pow(10,sliderStartNucle.getValue());
+    //Double R0 = GUI.userLambdaConst* Math.pow(10,sliderStartNucle.getValue());
     Double Np = Math.pow(10, sliderStartNucle.getValue());
     Double Rp;
     static JFreeChart chartParticleNumber;
@@ -85,7 +85,7 @@ public class SimN extends JPanel implements Runnable {
     public void CalculationN() {
 
         dt = GUI.mapTimediv.get(GUI.userTimeRange)*Double.parseDouble(GUI.textNumber.getText())/GUI.userTimeHop;
-        R0 = GUI.userLambdaConst* Math.pow(10, sliderStartNucle.getValue())*Math.pow(10, -9);
+        //R0 = GUI.userLambdaConst* Math.pow(10, sliderStartNucle.getValue())*Math.pow(10, -9);
         R.add(0.0);
         N.add(Math.pow(10, sliderStartNucle.getValue()));
         double los;
