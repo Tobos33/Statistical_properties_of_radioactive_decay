@@ -12,11 +12,12 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static Main.GUI.sliderStartNucle;
 import static java.lang.Math.abs;
 
 public class SimN extends JPanel implements Runnable {
-    Double R0 = GUI.userLambdaConst*GUI.userStartNucle;
-    Double Np = GUI.userStartNucle;
+    Double R0 = GUI.userLambdaConst* Math.pow(10,sliderStartNucle.getValue());
+    Double Np = Math.pow(10, sliderStartNucle.getValue());
     Double Rp;
     static JFreeChart chartParticleNumber;
     static JFreeChart chartActivity;
@@ -74,6 +75,8 @@ public class SimN extends JPanel implements Runnable {
             chartPanel1.repaint();
         }
         print();
+        N.clear();
+        R.clear();
 
 
     }
@@ -82,9 +85,9 @@ public class SimN extends JPanel implements Runnable {
     public void CalculationN() {
 
         dt = GUI.mapTimediv.get(GUI.userTimeRange)*Double.parseDouble(GUI.textNumber.getText())/GUI.userTimeHop;
-        R0 = GUI.userLambdaConst*GUI.userStartNucle*Math.pow(10, -9);
+        R0 = GUI.userLambdaConst* Math.pow(10, sliderStartNucle.getValue())*Math.pow(10, -9);
         R.add(0.0);
-        N.add(GUI.userStartNucle);
+        N.add(Math.pow(10, sliderStartNucle.getValue()));
         double los;
 
         for (int j = 0; j < GUI.userTimeHop+1; j++) {

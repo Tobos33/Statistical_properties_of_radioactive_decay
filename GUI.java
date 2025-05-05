@@ -27,7 +27,6 @@ import static Main.SimN.chartParticleNumber;
 import static Main.SimN.chartActivity;
 
 public class GUI extends JFrame {
-    SimN simulation;
     Thread simThread;
     static boolean running = true;
     static List<String> atomsList;
@@ -68,12 +67,12 @@ public class GUI extends JFrame {
     JLabel sliderValueTimeHop;
     JSlider sliderTimeHop;
     JLabel sliderValueStartNucle;
-    JSlider sliderStartNucle;
+    static JSlider sliderStartNucle;
     static double userLambdaConst;
     static String userTimeRange;
     static double userTimeNumber = 10.0;
     static int userTimeHop;
-    static double userStartNucle = 100000.0;
+    static double userStartNucle;
 
     ChartPanel chartPanel2;
     ChartPanel chartPanel1;
@@ -169,6 +168,7 @@ public class GUI extends JFrame {
         menu.add(itemOpen);
 
         save savingCharts = new save();
+
 
 
         chartParticleNumber = ChartFactory.createXYLineChart(
