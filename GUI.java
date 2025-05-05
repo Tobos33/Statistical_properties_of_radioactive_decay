@@ -46,12 +46,12 @@ public class GUI extends JFrame {
     JMenu menu;
     JMenu menuChartCustom;
     JMenu subMenuSaveData;
-    JMenu subMenuSaveChart;
-    JMenuItem itemNew;
+    //JMenu subMenuSaveChart;
+    //JMenuItem itemNew;
     static JMenuItem itemSaveData;
     JMenuItem itemSaveDataSQL;
     static JMenuItem itemSaveChart;
-    JMenuItem itemSaveChartSQL;
+    //JMenuItem itemSaveChartSQL;
     JMenuItem itemOpen;
     JMenuItem itemDataColor;
     JCheckBoxMenuItem itemChartBackgroundGrid;
@@ -69,7 +69,7 @@ public class GUI extends JFrame {
     static JSlider sliderStartNucle;
     static double userLambdaConst;
     static String userTimeRange;
-    static double userTimeNumber = 10.0;
+    //static double userTimeNumber = 10.0;
     static int userTimeHop;
     static double userStartNucle;
 
@@ -142,8 +142,7 @@ public class GUI extends JFrame {
 
 
 
-        itemNew = new JMenuItem("Nowy");
-        menu.add(itemNew);
+
 
         subMenuSaveData = new JMenu("Zapisz dane...");
         menu.add(subMenuSaveData);
@@ -154,14 +153,11 @@ public class GUI extends JFrame {
         itemSaveDataSQL = new JMenuItem("Zapisz dane do bazy SQL");
         subMenuSaveData.add(itemSaveDataSQL);
 
-        subMenuSaveChart = new JMenu("Zapisz wykresy...");
-        menu.add(subMenuSaveChart);
+
 
         itemSaveChart = new JMenuItem("Zapisz wykresy na dysku");
-        subMenuSaveChart.add(itemSaveChart);
+        menu.add(itemSaveChart);
 
-        itemSaveChartSQL = new JMenuItem("Zapisz wykresy do bazy SQL");
-        subMenuSaveChart.add(itemSaveChartSQL);
 
         itemOpen = new JMenuItem("Otwórz");
         menu.add(itemOpen);
