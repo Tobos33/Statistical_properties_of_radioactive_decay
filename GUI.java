@@ -46,12 +46,9 @@ public class GUI extends JFrame {
     JMenu menu;
     JMenu menuChartCustom;
     JMenu subMenuSaveData;
-    //JMenu subMenuSaveChart;
-    //JMenuItem itemNew;
     static JMenuItem itemSaveData;
     JMenuItem itemSaveDataSQL;
     static JMenuItem itemSaveChart;
-    //JMenuItem itemSaveChartSQL;
     JMenuItem itemOpen;
     JMenuItem itemDataColor;
     JCheckBoxMenuItem itemChartBackgroundGrid;
@@ -398,7 +395,7 @@ public class GUI extends JFrame {
     }
 
     public void startSimulation() {
-        SimN simulation = new SimN(chartPanel1, chartPanel2);
+        SimN simulation = new SimN();
         simThread = new Thread(simulation);
         simThread.start();
 

@@ -15,7 +15,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static Main.GUI.sliderStartNucle;
 import static java.lang.Math.abs;
 
-public class SimN extends JPanel implements Runnable {
+public class SimN implements Runnable {
     //Double R0 = GUI.userLambdaConst* Math.pow(10,sliderStartNucle.getValue());
     Double Np = Math.pow(10, sliderStartNucle.getValue());
     Double Rp;
@@ -30,12 +30,10 @@ public class SimN extends JPanel implements Runnable {
     static List<Double> N = new ArrayList<>();
     static List<Double> R = new ArrayList<>();
     static List<Double> T = new ArrayList<>();
-    ChartPanel chartPanel1;
-    ChartPanel chartPanel2;
 
-    public SimN(ChartPanel chartPanel1, ChartPanel chartPanel2) {
-        this.chartPanel2 = chartPanel2;
-        this.chartPanel1 = chartPanel1;
+
+    public SimN() {
+
         Nseries = new XYSeries("N(t)");
         Rseries = new XYSeries("R(t)");
         Ncollection = new XYSeriesCollection(Nseries);
@@ -55,6 +53,10 @@ public class SimN extends JPanel implements Runnable {
             GUI.textNumber.setText("Wrong number format.");
         }
 
+        N.clear();
+        R.clear();
+        T.clear();
+
         Rseries = new XYSeries("R(t)");
         Nseries = new XYSeries("N(t)");
         Rcollection.removeAllSeries();
@@ -72,12 +74,7 @@ public class SimN extends JPanel implements Runnable {
             T.add(dt*i);
             Rseries.add(dt * i / GUI.mapTimediv.get(GUI.userTimeRange), R.get(i));
             Nseries.add(dt * i / GUI.mapTimediv.get(GUI.userTimeRange), N.get(i));
-            chartPanel1.repaint();
         }
-        print();
-        N.clear();
-        R.clear();
-
 
     }
 
@@ -90,7 +87,7 @@ public class SimN extends JPanel implements Runnable {
         N.add(Math.pow(10, sliderStartNucle.getValue()));
         double los;
 
-        for (int j = 0; j < GUI.userTimeHop+1; j++) {
+        for (int j = 0; j < GUI.userTimeHop; j++) {
             int k = 0;
             int l;
             for (int i = 0; i < Np.intValue(); i++) {
@@ -111,10 +108,6 @@ public class SimN extends JPanel implements Runnable {
                 N.add(Np);
             }
         }
-    }
-
-    public void print() {
-        System.out.println(N);
     }
 
 }
