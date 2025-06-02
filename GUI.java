@@ -58,7 +58,7 @@ public class GUI extends JFrame {
     static String userTimeRange;
     //static double userTimeNumber = 10.0;
     static int userTimeHop;
-    static double userStartNucle;
+    static double userStartNucle = Math.pow(10, 6);
     Menu menuBar;
 
     static ChartPanel chartPanel2;
@@ -308,6 +308,8 @@ public class GUI extends JFrame {
         startNuclePanel.add(sliderStartNucle, BorderLayout.CENTER);
         //startNuclePanel.add(labelStartNucle1, BorderLayout.EAST);
         //startNuclePanel.add(labelStartNucle2, BorderLayout.WEST);
+
+
 
 
 

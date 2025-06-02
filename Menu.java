@@ -9,6 +9,7 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -23,16 +24,24 @@ public class Menu extends JMenuBar {
     JMenu menu;
     JMenu menuChartCustom;
     JMenu subMenuSaveData;
+    JMenu subMenuChooseColor;
     static JMenuItem itemSaveData;
     JMenuItem itemSaveDataSQL;
     static JMenuItem itemSaveChart;
     JMenuItem itemOpen;
-    JMenuItem itemDataColor;
+    JMenuItem itemNDataColor;
+    JMenuItem itemRDataColor;
+    JMenuItem itemNAnaliDataColor;
+    JMenuItem itemRAnaliDataColor;
     JCheckBoxMenuItem itemChartBackgroundGrid;
     JCheckBoxMenuItem showAnali;
     static boolean selectedshowAnali = false;
     JMenu MenuPoisson;
     JMenuItem Poisson;
+    static Color NDataColor = Color.BLUE;
+    static Color RDataColor = Color.BLUE;
+    static Color NAnaliDataColor = Color.RED;
+    static Color RAnaliDataColor = Color.RED;
 
     Menu(){
 
@@ -47,15 +56,45 @@ public class Menu extends JMenuBar {
         MenuPoisson.add(Poisson);
         this.add(MenuPoisson);
 
-        itemDataColor = new JMenuItem("Zmień kolor danych");
-        showAnali = new JCheckBoxMenuItem("Pokaż wykresy Analityczne");
+        subMenuChooseColor = new JMenu("Wybiezrz kolor krzywej");
+        menuChartCustom.add(subMenuChooseColor);
 
-        menuChartCustom.add(itemDataColor);
+        itemNDataColor = new JMenuItem("N(t) - symulacja");
+        subMenuChooseColor.add(itemNDataColor);
+        itemRDataColor = new JMenuItem("R(t) - symulacja");
+        subMenuChooseColor.add(itemRDataColor);
+        itemNAnaliDataColor = new JMenuItem("N(t) - teoria");
+        subMenuChooseColor.add(itemNAnaliDataColor);
+        itemRAnaliDataColor = new JMenuItem("R(t) - teoria");
+        subMenuChooseColor.add(itemRAnaliDataColor);
+
+        showAnali = new JCheckBoxMenuItem("Pokaż wykresy Analityczne");
+        showAnali.setSelected(false);
+
+
         menuChartCustom.add(showAnali);
 
         itemChartBackgroundGrid = new JCheckBoxMenuItem("Siatka w tle");
         itemChartBackgroundGrid.setSelected(true);
         menuChartCustom.add(itemChartBackgroundGrid);
+
+        subMenuSaveData = new JMenu("Zapisz dane...");
+        menu.add(subMenuSaveData);
+
+        itemSaveData = new JMenuItem("Zapisz dane na dysku");
+        subMenuSaveData.add(itemSaveData);
+
+        itemSaveDataSQL = new JMenuItem("Zapisz dane do bazy SQL");
+        subMenuSaveData.add(itemSaveDataSQL);
+
+
+
+        itemSaveChart = new JMenuItem("Zapisz wykresy na dysku");
+        menu.add(itemSaveChart);
+
+
+        itemOpen = new JMenuItem("Otwórz");
+        menu.add(itemOpen);
 
         itemChartBackgroundGrid.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -76,12 +115,35 @@ public class Menu extends JMenuBar {
         showAnali.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 selectedshowAnali = showAnali.isSelected();
-                SimN.rendererN.setSeriesLinesVisible(2, selectedshowAnali);
-                SimN.rendererR.setSeriesLinesVisible(2, selectedshowAnali);
-                SimN.plotN.setRenderer(SimN.rendererN);
-                SimN.plotR.setRenderer(SimN.rendererR);
-                GUI.chartPanel1.repaint();
-                GUI.chartPanel2.repaint();
+                if (selectedshowAnali) {
+                    if(SimN.NseriesAnali != null) {
+                        SimN.Ncollection.addSeries(SimN.NseriesAnali);
+                        SimN.Rcollection.addSeries(SimN.RseriesAnali);
+
+                        SimN.rendererN.setSeriesLinesVisible(1, selectedshowAnali);
+                        SimN.rendererN.setSeriesShapesVisible(1, false);
+                        SimN.rendererN.setSeriesPaint(1, Color.RED);
+
+                        SimN.rendererR.setSeriesLinesVisible(1, Menu.selectedshowAnali);
+                        SimN.rendererR.setSeriesShapesVisible(1, false);
+                        SimN.rendererR.setSeriesPaint(1, Color.RED);
+
+                        SimN.plotN.setRenderer(SimN.rendererN);
+                        SimN.plotR.setRenderer(SimN.rendererR);
+
+                        GUI.chartPanel1.repaint();
+                        GUI.chartPanel2.repaint();
+                    }
+
+                }
+                else if(!selectedshowAnali){
+                    if(SimN.NseriesAnali != null) {
+                        SimN.Ncollection.removeSeries(SimN.NseriesAnali);
+                        SimN.Rcollection.removeSeries(SimN.RseriesAnali);
+                        GUI.chartPanel1.repaint();
+                        GUI.chartPanel2.repaint();
+                    }
+                }
 
             }
         });
@@ -100,7 +162,7 @@ public class Menu extends JMenuBar {
                     K.add(0);
                     M.add(GUI.userStartNucle*i/100);
                 }
-                //Collections.sort(SimN.P);
+
                 for(int i = 0; i< SimN.P.size(); i++){
                     for(int j = 0; j < 20; j++){
                         if(SimN.P.get(i) < M.get(j)){
@@ -142,26 +204,50 @@ public class Menu extends JMenuBar {
         });
 
 
+        itemNDataColor.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Menu.NDataColor = JColorChooser.showDialog(GUI.getFrames()[0], "Wybierz kolor", Color.WHITE);
+                if (SimN.NseriesAnali != null) {
+                    SimN.rendererN.setSeriesPaint(0, Menu.NDataColor);
+                    SimN.plotN.setRenderer(SimN.rendererN);
+                    GUI.chartPanel1.repaint();
+                }
+            }
+        });
 
+        itemRDataColor.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                RDataColor = JColorChooser.showDialog(GUI.getFrames()[0], "Wybierz kolor", Color.WHITE);
+                if (SimN.NseriesAnali != null) {
+                    SimN.rendererR.setSeriesPaint(0, RDataColor);
+                    SimN.plotN.setRenderer(SimN.rendererR);
+                    GUI.chartPanel2.repaint();
+                }
+            }
+        });
 
+        itemRAnaliDataColor.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                NAnaliDataColor = JColorChooser.showDialog(GUI.getFrames()[0], "Wybierz kolor", Color.WHITE);
+                if (SimN.NseriesAnali != null) {
+                    SimN.rendererN.setSeriesPaint(1, NAnaliDataColor);
+                    SimN.plotN.setRenderer(SimN.rendererN);
+                    GUI.chartPanel1.repaint();
+                }
+            }
+        });
 
-        subMenuSaveData = new JMenu("Zapisz dane...");
-        menu.add(subMenuSaveData);
+        itemNAnaliDataColor.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                RAnaliDataColor = JColorChooser.showDialog(GUI.getFrames()[0], "Wybierz kolor", Color.WHITE);
+                if (SimN.NseriesAnali != null) {
+                    SimN.rendererR.setSeriesPaint(1, RAnaliDataColor);
+                    SimN.plotN.setRenderer(SimN.rendererR);
+                    GUI.chartPanel2.repaint();
+                }
+            }
+        });
 
-        itemSaveData = new JMenuItem("Zapisz dane na dysku");
-        subMenuSaveData.add(itemSaveData);
-
-        itemSaveDataSQL = new JMenuItem("Zapisz dane do bazy SQL");
-        subMenuSaveData.add(itemSaveDataSQL);
-
-
-
-        itemSaveChart = new JMenuItem("Zapisz wykresy na dysku");
-        menu.add(itemSaveChart);
-
-
-        itemOpen = new JMenuItem("Otwórz");
-        menu.add(itemOpen);
     }
 
     public static double mean(List<Integer> probability) {
