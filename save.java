@@ -12,7 +12,7 @@ import java.io.*;
 
 public class save {
     public save(){
-        GUI.itemSaveChart.addActionListener(new ActionListener() {
+        Menu.itemSaveChart.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 BufferedImage image = new BufferedImage(GUI.histogramsPanel.getWidth(), GUI.histogramsPanel.getHeight(), BufferedImage.TYPE_INT_ARGB);
@@ -40,7 +40,7 @@ public class save {
             }
         });
 
-        GUI.itemSaveData.addActionListener(new ActionListener() {
+        Menu.itemSaveData.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                String savetext = SimN.N.toString() + "\n"+ SimN.R.toString()+"\n"+SimN.T.toString();

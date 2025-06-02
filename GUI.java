@@ -42,16 +42,6 @@ public class GUI extends JFrame {
     JPanel timePanel;
     JButton start;
     JButton stop;
-    JMenuBar menuBar;
-    JMenu menu;
-    JMenu menuChartCustom;
-    JMenu subMenuSaveData;
-    static JMenuItem itemSaveData;
-    JMenuItem itemSaveDataSQL;
-    static JMenuItem itemSaveChart;
-    JMenuItem itemOpen;
-    JMenuItem itemDataColor;
-    JCheckBoxMenuItem itemChartBackgroundGrid;
     JComboBox comboNucleChoser;
     JLabel labelRadioactiveConstant;
     JLabel labelLambda;
@@ -69,9 +59,10 @@ public class GUI extends JFrame {
     //static double userTimeNumber = 10.0;
     static int userTimeHop;
     static double userStartNucle;
+    Menu menuBar;
 
-    ChartPanel chartPanel2;
-    ChartPanel chartPanel1;
+    static ChartPanel chartPanel2;
+    static ChartPanel chartPanel1;
     public GUI() throws HeadlessException{
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -105,59 +96,8 @@ public class GUI extends JFrame {
         startPanel.add(start);
         startPanel.add(stop);
 
-
-        menuBar = new JMenuBar();
+        menuBar = new Menu();
         this.setJMenuBar(menuBar);
-
-        menu = new JMenu("Menu");
-        menuBar.add(menu);
-
-        menuChartCustom = new JMenu("Personalizacja wykresów");
-        menuBar.add(menuChartCustom);
-
-        itemDataColor = new JMenuItem("Zmień kolor danych");
-        menuChartCustom.add(itemDataColor);
-
-        itemChartBackgroundGrid = new JCheckBoxMenuItem("Siatka w tle");
-        itemChartBackgroundGrid.setSelected(true);
-        menuChartCustom.add(itemChartBackgroundGrid);
-
-        itemChartBackgroundGrid.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                boolean selected = itemChartBackgroundGrid.isSelected();
-                XYPlot plotActivity = chartActivity.getXYPlot();
-                XYPlot plotParticleNumber = chartParticleNumber.getXYPlot();
-
-                plotActivity.setDomainGridlinesVisible(selected);
-                plotActivity.setRangeGridlinesVisible(selected);
-                plotParticleNumber.setDomainGridlinesVisible(selected);
-                plotParticleNumber.setRangeGridlinesVisible(selected);
-                chartPanel1.repaint();
-                chartPanel2.repaint();
-            }
-        });
-
-
-
-
-
-        subMenuSaveData = new JMenu("Zapisz dane...");
-        menu.add(subMenuSaveData);
-
-        itemSaveData = new JMenuItem("Zapisz dane na dysku");
-        subMenuSaveData.add(itemSaveData);
-
-        itemSaveDataSQL = new JMenuItem("Zapisz dane do bazy SQL");
-        subMenuSaveData.add(itemSaveDataSQL);
-
-
-
-        itemSaveChart = new JMenuItem("Zapisz wykresy na dysku");
-        menu.add(itemSaveChart);
-
-
-        itemOpen = new JMenuItem("Otwórz");
-        menu.add(itemOpen);
 
         save savingCharts = new save();
 
@@ -398,6 +338,10 @@ public class GUI extends JFrame {
         SimN simulation = new SimN();
         simThread = new Thread(simulation);
         simThread.start();
+        simulation.AnalyticalValues();
+        chartPanel1.repaint();
+
+
 
 
     }
