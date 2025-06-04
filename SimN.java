@@ -146,17 +146,44 @@ public class SimN implements Runnable {
 
     public void AnalyticalValues() {
         NseriesAnali.clear();
-        int T = (int) (Double.parseDouble(GUI.textNumber.getText()));
-        int N0 = (int) Math.pow(10, sliderStartNucle.getValue());
-        double lambda = GUI.userLambdaConst*Math.pow(10, -9);
+        if(Double.parseDouble(GUI.textNumber.getText())<10){
+            int T = (int) (Double.parseDouble(GUI.textNumber.getText())*1000);
+            int N0 = (int) Math.pow(10, sliderStartNucle.getValue());
+            double lambda = GUI.userLambdaConst*Math.pow(10, -9);
+            double ddt = GUI.mapTimediv.get(GUI.userTimeRange)/1000;
 
+            for (int i = 0; i < T+1; i++) {
+                NseriesAnali.add(((double)i)/1000, N0*Math.exp(-lambda*i*ddt));
+                RseriesAnali.add(((double)i)/1000, N0*lambda*Math.pow(10, 9)*Math.exp(-lambda*i*ddt));
 
-        dt = GUI.mapTimediv.get(GUI.userTimeRange) * Double.parseDouble(GUI.textNumber.getText()) / GUI.userTimeHop;
-        for (int i = 0; i < T+1; i++) {
-            NseriesAnali.add(i, N0*Math.exp(-lambda*i*GUI.mapTimediv.get(GUI.userTimeRange)));
-            RseriesAnali.add(i, N0*lambda*Math.pow(10, 9)*Math.exp(-lambda*i*GUI.mapTimediv.get(GUI.userTimeRange)));
-
+            }
         }
+        else if(Double.parseDouble(GUI.textNumber.getText())<100){
+            int T = (int) (Double.parseDouble(GUI.textNumber.getText())*100);
+            int N0 = (int) Math.pow(10, sliderStartNucle.getValue());
+            double lambda = GUI.userLambdaConst*Math.pow(10, -9);
+            double ddt = GUI.mapTimediv.get(GUI.userTimeRange)/100;
+
+            for (int i = 0; i < T+1; i++) {
+                NseriesAnali.add(((double)i)/100, N0*Math.exp(-lambda*i*ddt));
+                RseriesAnali.add(((double)i)/100, N0*lambda*Math.pow(10, 9)*Math.exp(-lambda*i*ddt));
+
+            }
+        }
+        else{
+            int T = (int) (Double.parseDouble(GUI.textNumber.getText()));
+            int N0 = (int) Math.pow(10, sliderStartNucle.getValue());
+            double lambda = GUI.userLambdaConst*Math.pow(10, -9);
+
+
+            double ddt = GUI.mapTimediv.get(GUI.userTimeRange);
+            for (int i = 0; i < T+1; i++) {
+                NseriesAnali.add(i, N0*Math.exp(-lambda*i*ddt));
+                RseriesAnali.add(i, N0*lambda*Math.pow(10, 9)*Math.exp(-lambda*i*ddt));
+
+            }
+        }
+
 
     }
     public void CalculationN() {
