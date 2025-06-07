@@ -220,13 +220,13 @@ public class Menu extends JMenuBar {
                 RDataColor = JColorChooser.showDialog(GUI.getFrames()[0], "Wybierz kolor", Color.WHITE);
                 if (SimN.NseriesAnali != null) {
                     SimN.rendererR.setSeriesPaint(0, RDataColor);
-                    SimN.plotN.setRenderer(SimN.rendererR);
+                    SimN.plotR.setRenderer(SimN.rendererR);
                     GUI.chartPanel2.repaint();
                 }
             }
         });
 
-        itemRAnaliDataColor.addActionListener(new ActionListener() {
+        itemNAnaliDataColor.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 NAnaliDataColor = JColorChooser.showDialog(GUI.getFrames()[0], "Wybierz kolor", Color.WHITE);
                 if (SimN.NseriesAnali != null) {
@@ -237,12 +237,12 @@ public class Menu extends JMenuBar {
             }
         });
 
-        itemNAnaliDataColor.addActionListener(new ActionListener() {
+        itemRAnaliDataColor.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 RAnaliDataColor = JColorChooser.showDialog(GUI.getFrames()[0], "Wybierz kolor", Color.WHITE);
                 if (SimN.NseriesAnali != null) {
                     SimN.rendererR.setSeriesPaint(1, RAnaliDataColor);
-                    SimN.plotN.setRenderer(SimN.rendererR);
+                    SimN.plotR.setRenderer(SimN.rendererR);
                     GUI.chartPanel2.repaint();
                 }
             }
