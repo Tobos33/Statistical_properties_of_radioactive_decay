@@ -23,8 +23,6 @@ import java.text.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static Main.SimN.chartParticleNumber;
-import static Main.SimN.chartActivity;
 
 public class GUI extends JFrame {
     Thread simThread;
@@ -38,7 +36,6 @@ public class GUI extends JFrame {
     String[] timeList = {"sekund", "minut", "godzin", "tygodni", "miesięcy", "lat", "miliony lat"};
     JPanel startPanel;
     JPanel optionsPanel;
-    static JPanel histogramsPanel;
     JPanel timePanel;
     JButton start;
     JButton stop;
@@ -60,9 +57,9 @@ public class GUI extends JFrame {
     static int userTimeHop;
     static double userStartNucle = Math.pow(10, 6);
     Menu menuBar;
+    static Charts histogramsPanel;
 
-    static ChartPanel chartPanel2;
-    static ChartPanel chartPanel1;
+
     public GUI() throws HeadlessException{
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -72,7 +69,7 @@ public class GUI extends JFrame {
 
         startPanel = new JPanel();
         optionsPanel = new JPanel();
-        histogramsPanel = new JPanel();
+        histogramsPanel = new Charts();
         timePanel = new JPanel();
 
         this.add(startPanel, BorderLayout.SOUTH);
@@ -102,40 +99,6 @@ public class GUI extends JFrame {
         save savingCharts = new save();
         LoadFile loadingFiles = new LoadFile();
 
-
-
-        chartParticleNumber = ChartFactory.createXYLineChart(
-                "Liczba pozostałych nuklidów w czasie",
-                "t",
-                "N(t)",
-                new XYSeriesCollection(),
-                PlotOrientation.VERTICAL,
-                true,
-                true,
-                false
-        );
-
-        chartPanel1 = new ChartPanel(chartParticleNumber);
-        chartPanel1.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-
-        chartActivity = ChartFactory.createXYLineChart(
-                "Wykres aktywności promieniotwórczej próbki od czasu",
-                "t ",
-                "R [nBq]",
-                new XYSeriesCollection(),
-                PlotOrientation.VERTICAL,
-                true,
-                true,
-                false
-        );
-
-        Border chartborder = BorderFactory.createLineBorder(Color.BLACK, 1);
-
-        chartPanel2 = new ChartPanel(chartActivity);
-        chartPanel2.setBorder(chartborder);
-
-        histogramsPanel.add(chartPanel1);
-        histogramsPanel.add(chartPanel2);
 
         start.addActionListener(e -> startSimulation());
 
@@ -342,7 +305,7 @@ public class GUI extends JFrame {
         simThread = new Thread(simulation);
         simThread.start();
         simulation.AnalyticalValues();
-        chartPanel1.repaint();
+        histogramsPanel.repaint();
 
 
 

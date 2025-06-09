@@ -13,6 +13,8 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static Main.Charts.*;
 import static Main.GUI.sliderStartNucle;
 import java.awt.geom.Ellipse2D;
 
@@ -20,89 +22,21 @@ public class SimN implements Runnable {
     //Double R0 = GUI.userLambdaConst* Math.pow(10,sliderStartNucle.getValue());
     Double Np = Math.pow(10, sliderStartNucle.getValue());
     Double Rp;
-    static JFreeChart chartParticleNumber;
-    static JFreeChart chartActivity;
-    static XYSeries Nseries;
-    static XYSeries Rseries;
-    static XYSeries NseriesAnali;
-    static XYSeries RseriesAnali;
-    //XYSeries Poisson;
-    static XYSeriesCollection Rcollection;
-    static XYSeriesCollection Ncollection;
-    static XYPlot plotN;
-    static XYPlot plotR;
-    static XYLineAndShapeRenderer rendererN;
-    static XYLineAndShapeRenderer rendererR;
-
-
-
-
     double dt;
-    static List<Integer> P = new ArrayList<>();
-    static List<Double> N = new ArrayList<>();
-    static List<Double> R = new ArrayList<>();
-    static List<Double> T = new ArrayList<>();
-
 
     public SimN() {
 
-        Nseries = new XYSeries("N(t)");
-        Rseries = new XYSeries("R(t)");
-
-        NseriesAnali = new XYSeries("N Analityczne");
-        RseriesAnali = new XYSeries("R Analityczne");
-        //Poisson = new XYSeries("Poisson");
-
-        Ncollection = new XYSeriesCollection();
-        Ncollection.addSeries(Nseries);
-
-
-
-        Rcollection = new XYSeriesCollection();
-        Rcollection.addSeries(Rseries);
-        //Rcollection.addSeries(Poisson);
-
-
-
-
-
-        chartParticleNumber.getXYPlot().setDataset(Ncollection);
-        chartActivity.getXYPlot().setDataset(Rcollection);
-
-        plotN = chartParticleNumber.getXYPlot();
-        plotR = chartActivity.getXYPlot();
-
-        rendererN = new XYLineAndShapeRenderer();
-
-        Shape circle = new Ellipse2D.Double(-3, -3, 6, 6);
-        rendererN.setSeriesLinesVisible(0, true);
-        rendererN.setSeriesShapesVisible(0, true);
-        rendererN.setSeriesShape(0, circle);
-        rendererN.setSeriesPaint(0, Menu.NDataColor);
-
-
-        rendererR = new XYLineAndShapeRenderer();
-
-        rendererR.setSeriesLinesVisible(0, true);
-        rendererR.setSeriesShapesVisible(0, true);
-        rendererR.setSeriesPaint(0, Menu.RDataColor);
-        rendererR.setSeriesShape(0, circle);
-
-
-        plotN.setRenderer(rendererN);
-        plotR.setRenderer(rendererR);
-
         if (Menu.selectedshowAnali) {
-            SimN.Ncollection.addSeries(SimN.NseriesAnali);
-            SimN.Rcollection.addSeries(SimN.RseriesAnali);
-            SimN.rendererN.setSeriesLinesVisible(1, Menu.selectedshowAnali);
-            SimN.rendererN.setSeriesShapesVisible(1, false);
-            SimN.rendererN.setSeriesPaint(1, Menu.NAnaliDataColor);
-            SimN.rendererR.setSeriesLinesVisible(1, Menu.selectedshowAnali);
-            SimN.rendererR.setSeriesShapesVisible(1, false);
-            SimN.rendererR.setSeriesPaint(1, Menu.RAnaliDataColor);
-            SimN.plotN.setRenderer(SimN.rendererN);
-            SimN.plotR.setRenderer(SimN.rendererR);
+            Charts.Ncollection.addSeries(Charts.NseriesAnali);
+            Charts.Rcollection.addSeries(Charts.RseriesAnali);
+            Charts.rendererN.setSeriesLinesVisible(1, Menu.selectedshowAnali);
+            Charts.rendererN.setSeriesShapesVisible(1, false);
+            Charts.rendererN.setSeriesPaint(1, Menu.NAnaliDataColor);
+            Charts.rendererR.setSeriesLinesVisible(1, Menu.selectedshowAnali);
+            Charts.rendererR.setSeriesShapesVisible(1, false);
+            Charts.rendererR.setSeriesPaint(1, Menu.RAnaliDataColor);
+            Charts.plotN.setRenderer(Charts.rendererN);
+            Charts.plotR.setRenderer(Charts.rendererR);
         }
 
     }
@@ -121,8 +55,8 @@ public class SimN implements Runnable {
         R.clear();
         T.clear();
 
-        Rseries.clear();
-        Nseries.clear();
+        Charts.Rseries.clear();
+        Charts.Nseries.clear();
 
 
         CalculationN();
@@ -135,8 +69,8 @@ public class SimN implements Runnable {
             }
 
             T.add(dt*i);
-            Rseries.add(dt * i / GUI.mapTimediv.get(GUI.userTimeRange), R.get(i));
-            Nseries.add(dt * i / GUI.mapTimediv.get(GUI.userTimeRange), N.get(i));
+            Charts.Rseries.add(dt * i / GUI.mapTimediv.get(GUI.userTimeRange), R.get(i));
+            Charts.Nseries.add(dt * i / GUI.mapTimediv.get(GUI.userTimeRange), N.get(i));
         }
 
     }
@@ -145,7 +79,7 @@ public class SimN implements Runnable {
 
 
     public void AnalyticalValues() {
-        NseriesAnali.clear();
+        Charts.NseriesAnali.clear();
         if(Double.parseDouble(GUI.textNumber.getText())<10){
             int T = (int) (Double.parseDouble(GUI.textNumber.getText())*1000);
             int N0 = (int) Math.pow(10, sliderStartNucle.getValue());
@@ -153,8 +87,8 @@ public class SimN implements Runnable {
             double ddt = GUI.mapTimediv.get(GUI.userTimeRange)/1000;
 
             for (int i = 0; i < T+1; i++) {
-                NseriesAnali.add(((double)i)/1000, N0*Math.exp(-lambda*i*ddt));
-                RseriesAnali.add(((double)i)/1000, N0*lambda*Math.pow(10, 9)*Math.exp(-lambda*i*ddt));
+                Charts.NseriesAnali.add(((double)i)/1000, N0*Math.exp(-lambda*i*ddt));
+                Charts.RseriesAnali.add(((double)i)/1000, N0*lambda*Math.pow(10, 9)*Math.exp(-lambda*i*ddt));
 
             }
         }
@@ -165,8 +99,8 @@ public class SimN implements Runnable {
             double ddt = GUI.mapTimediv.get(GUI.userTimeRange)/100;
 
             for (int i = 0; i < T+1; i++) {
-                NseriesAnali.add(((double)i)/100, N0*Math.exp(-lambda*i*ddt));
-                RseriesAnali.add(((double)i)/100, N0*lambda*Math.pow(10, 9)*Math.exp(-lambda*i*ddt));
+                Charts.NseriesAnali.add(((double)i)/100, N0*Math.exp(-lambda*i*ddt));
+                Charts.RseriesAnali.add(((double)i)/100, N0*lambda*Math.pow(10, 9)*Math.exp(-lambda*i*ddt));
 
             }
         }
@@ -178,8 +112,8 @@ public class SimN implements Runnable {
 
             double ddt = GUI.mapTimediv.get(GUI.userTimeRange);
             for (int i = 0; i < T+1; i++) {
-                NseriesAnali.add(i, N0*Math.exp(-lambda*i*ddt));
-                RseriesAnali.add(i, N0*lambda*Math.pow(10, 9)*Math.exp(-lambda*i*ddt));
+                Charts.NseriesAnali.add(i, N0*Math.exp(-lambda*i*ddt));
+                Charts.RseriesAnali.add(i, N0*lambda*Math.pow(10, 9)*Math.exp(-lambda*i*ddt));
 
             }
         }

@@ -4,8 +4,12 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.sql.*;
 
 public class LoadFile {
+    private static final String DB_URL = "jdbc:mysql://sql7.freesqldatabase.com/sql7783889";
+    private static final String DB_USER = "sql7783889";
+    private static final String DB_PASSWORD = "Yss3mGrEhv";
        public LoadFile() {
            Menu.itemOpen.addActionListener(new ActionListener() {
 
@@ -20,15 +24,14 @@ public class LoadFile {
                        JOptionPane.showMessageDialog(null, "wzieto plik w ifie");
 
                        // Wyczyść obecne dane
-                       SimN.T.clear();
-                       SimN.N.clear();
-                       SimN.R.clear();
+                       Charts.T.clear();
+                       Charts.N.clear();
+                       Charts.R.clear();
                        JOptionPane.showMessageDialog(null, "przeczyszczono dane 1");
 
-                       if(SimN.Nseries != null)
-                       SimN.Nseries.clear();
-                       if(SimN.Rseries != null)
-                       SimN.Rseries.clear();
+                       if(Charts.Nseries != null) Charts.Nseries.clear();
+                       if(Charts.Rseries != null) Charts.Rseries.clear();
+
                        JOptionPane.showMessageDialog(null, "przeczyszczono dane");
 
                        try (BufferedReader reader = new BufferedReader(new FileReader(fileToLoad))) {
@@ -52,9 +55,9 @@ public class LoadFile {
                                        double nuklidy = Double.parseDouble(parts[1]);
                                        double aktywnosc = Double.parseDouble(parts[2]);
 
-                                       SimN.T.add(czas);
-                                       SimN.N.add(nuklidy);
-                                       SimN.R.add(aktywnosc);
+                                       Charts.T.add(czas);
+                                       Charts.N.add(nuklidy);
+                                       Charts.R.add(aktywnosc);
                                    } catch (NumberFormatException ex) {
                                        JOptionPane.showMessageDialog(null, "Błąd parsowania danych w linii " + lineNumber);
                                    }
@@ -66,15 +69,74 @@ public class LoadFile {
                            JOptionPane.showMessageDialog(null, "Błąd podczas wczytywania danych");
                        }
                        for (int i = 0; i < GUI.userTimeHop + 1; i++) {
-                           double dt = SimN.T.get(1) - SimN.T.get(0);
-                           SimN.T.add(dt*i);
-                           SimN.Rseries.add(dt * i / GUI.mapTimediv.get(GUI.userTimeRange), SimN.R.get(i));
-                           SimN.Nseries.add(dt * i / GUI.mapTimediv.get(GUI.userTimeRange), SimN.N.get(i));
+                           double dt = Charts.T.get(1) - Charts.T.get(0);
+                           Charts.T.add(dt*i);
+                           Charts.Rseries.add(dt * i / GUI.mapTimediv.get(GUI.userTimeRange), Charts.R.get(i));
+                           Charts.Nseries.add(dt * i / GUI.mapTimediv.get(GUI.userTimeRange), Charts.N.get(i));
                        }
-                       GUI.chartPanel1.repaint();
-                       GUI.chartPanel2.repaint();
+                       GUI.histogramsPanel.repaint();
                    }
                }
            });
+
+           Menu.itemLoadDataSQL.addActionListener(new ActionListener() {
+
+               @Override
+               public void actionPerformed(ActionEvent e) {
+                   try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+                        Statement stmt = conn.createStatement()) {
+
+
+                        String tableName = JOptionPane.showInputDialog("Podaj nazwę tabeli, z której chcesz pobrać dane:");
+
+                        if (tableName == null || tableName.trim().isEmpty()) {
+                            JOptionPane.showMessageDialog(null, "Nie podano nazwy tabeli.");
+                            return;
+                        }
+
+                        // Wyczyść obecne dane
+                        Charts.T.clear();
+                        Charts.N.clear();
+                        Charts.R.clear();
+
+                        if (Charts.Nseries != null) Charts.Nseries.clear();
+                        if (Charts.Rseries != null) Charts.Rseries.clear();
+
+
+
+                       String sql = "SELECT T, N, R FROM `" + tableName + "`";
+                       ResultSet rs = stmt.executeQuery(sql);
+
+                       while (rs.next()) {
+                           double czas = rs.getDouble("T");
+                           double nuklidy = rs.getDouble("N");
+                           double aktywnosc = rs.getDouble("R");
+
+                           Charts.T.add(czas);
+                           Charts.N.add(nuklidy);
+                           Charts.R.add(aktywnosc);
+                       }
+
+                       rs.close();
+
+
+                   } catch (SQLException ex) {
+                       ex.printStackTrace();
+                       JOptionPane.showMessageDialog(null, "Błąd podczas pobierania danych z bazy.");
+                       return;
+                   }
+
+                   // Tworzenie serii do wykresów
+                   for (int i = 0; i < GUI.userTimeHop + 1 && i < Charts.T.size(); i++) {
+                       double dt = Charts.T.get(1) - Charts.T.get(0);
+                       Charts.Rseries.add(dt * i / GUI.mapTimediv.get(GUI.userTimeRange), Charts.R.get(i));
+                       Charts.Nseries.add(dt * i / GUI.mapTimediv.get(GUI.userTimeRange), Charts.N.get(i));
+                   }
+
+                   GUI.histogramsPanel.repaint();
+                   JOptionPane.showMessageDialog(null, "Dane zostały wczytane z bazy danych!");
+               }
+           });
        }
+
 }
