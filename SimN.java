@@ -20,24 +20,11 @@ import java.awt.geom.Ellipse2D;
 
 public class SimN implements Runnable {
     //Double R0 = GUI.userLambdaConst* Math.pow(10,sliderStartNucle.getValue());
-    Double Np = Math.pow(10, sliderStartNucle.getValue());
-    Double Rp;
-    double dt;
+    static Double Np = Math.pow(10, sliderStartNucle.getValue());
+    static Double Rp;
+    static double dt;
 
     public SimN() {
-
-        if (Menu.selectedshowAnali) {
-            Charts.Ncollection.addSeries(Charts.NseriesAnali);
-            Charts.Rcollection.addSeries(Charts.RseriesAnali);
-            Charts.rendererN.setSeriesLinesVisible(1, Menu.selectedshowAnali);
-            Charts.rendererN.setSeriesShapesVisible(1, false);
-            Charts.rendererN.setSeriesPaint(1, Menu.NAnaliDataColor);
-            Charts.rendererR.setSeriesLinesVisible(1, Menu.selectedshowAnali);
-            Charts.rendererR.setSeriesShapesVisible(1, false);
-            Charts.rendererR.setSeriesPaint(1, Menu.RAnaliDataColor);
-            Charts.plotN.setRenderer(Charts.rendererN);
-            Charts.plotR.setRenderer(Charts.rendererR);
-        }
 
     }
 
@@ -55,7 +42,9 @@ public class SimN implements Runnable {
         R.clear();
         T.clear();
 
+        if(Charts.Rseries != null)
         Charts.Rseries.clear();
+        if(Charts.Nseries != null)
         Charts.Nseries.clear();
 
 
@@ -78,8 +67,9 @@ public class SimN implements Runnable {
 
 
 
-    public void AnalyticalValues() {
+    public static void AnalyticalValues() {
         Charts.NseriesAnali.clear();
+        Charts.RseriesAnali.clear();
         if(Double.parseDouble(GUI.textNumber.getText())<10){
             int T = (int) (Double.parseDouble(GUI.textNumber.getText())*1000);
             int N0 = (int) Math.pow(10, sliderStartNucle.getValue());

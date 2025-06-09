@@ -55,6 +55,7 @@ public class Menu extends JMenuBar {
         MenuPoisson.add(Poisson);
         this.add(MenuPoisson);
 
+
         subMenuChooseColor = new JMenu("Wybiezrz kolor krzywej");
         menuChartCustom.add(subMenuChooseColor);
 
@@ -250,8 +251,14 @@ public class Menu extends JMenuBar {
         });
 
 
-
     }
+
+
+
+
+
+
+
 
     public static double mean(List<Integer> probability) {
         double sum = 0.0;

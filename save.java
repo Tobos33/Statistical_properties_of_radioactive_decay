@@ -51,6 +51,11 @@ public class save {
             public void actionPerformed(ActionEvent e) {
                //String savetext = SimN.N.toString() + "\n"+ SimN.R.toString()+"\n"+SimN.T.toString();
                StringBuilder savetext = new StringBuilder();
+               savetext.append(GUI.comboNucleChoser.getSelectedItem().toString() + "\n");
+               savetext.append(GUI.textNumber.getText().toString() + "\n");
+               savetext.append(GUI.comboTimeChoser.getSelectedItem().toString() + "\n");
+               savetext.append(GUI.sliderTimeHop.getValue() + "\n");
+               savetext.append(GUI.sliderStartNucle.getValue() + "\n");
                savetext.append(String.format("%-12s %-20s %-15s\n", "Czas[" + GUI.comboTimeChoser.getSelectedItem()+"]", "Liczba nuklidów", "Aktywność [nBq]"));
                savetext.append("--------------------------------------------------------\n");
 

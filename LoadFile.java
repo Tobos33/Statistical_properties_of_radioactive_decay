@@ -16,40 +16,44 @@ public class LoadFile {
                @Override
                public void actionPerformed(ActionEvent e) {
                    JFileChooser chooser = new JFileChooser();
-                   JOptionPane.showMessageDialog(null, "wybrano plik1");
+
                    int wynik = chooser.showOpenDialog(null);
-                   JOptionPane.showMessageDialog(null, "wybrano plik2");
+
                    if (wynik == JFileChooser.APPROVE_OPTION) {
                        File fileToLoad = chooser.getSelectedFile();
-                       JOptionPane.showMessageDialog(null, "wzieto plik w ifie");
+
 
                        // Wyczyść obecne dane
                        Charts.T.clear();
                        Charts.N.clear();
                        Charts.R.clear();
-                       JOptionPane.showMessageDialog(null, "przeczyszczono dane 1");
+
 
                        if(Charts.Nseries != null) Charts.Nseries.clear();
                        if(Charts.Rseries != null) Charts.Rseries.clear();
 
-                       JOptionPane.showMessageDialog(null, "przeczyszczono dane");
+
 
                        try (BufferedReader reader = new BufferedReader(new FileReader(fileToLoad))) {
                            String line;
                            int lineNumber = 0;
-
+                           GUI.comboNucleChoser.setSelectedItem(reader.readLine());
+                           GUI.textNumber.setText(reader.readLine());
+                           GUI.comboTimeChoser.setSelectedItem(reader.readLine());
+                           GUI.sliderTimeHop.setValue(Integer.parseInt(reader.readLine()));
+                           GUI.sliderStartNucle.setValue(Integer.parseInt(reader.readLine()));
                            while ((line = reader.readLine()) != null) {
                                lineNumber++;
 
                                // Pomijamy nagłówki
                                if (lineNumber <= 2 || line.trim().isEmpty()) continue;
 
-                               JOptionPane.showMessageDialog(null, "pomieto naglowki");
+
 
                                // Rozdziel kolumny – wielokrotne spacje/taby
                                String[] parts = line.trim().split("\\s+");
-                               JOptionPane.showMessageDialog(null, "rozdzielono kolumny");
-                               if (parts.length >= 1) {
+
+                               if (parts.length >= 2) {
                                    try {
                                        double czas = Double.parseDouble(parts[0]);
                                        double nuklidy = Double.parseDouble(parts[1]);
@@ -68,12 +72,16 @@ public class LoadFile {
                        } catch (IOException ex) {
                            JOptionPane.showMessageDialog(null, "Błąd podczas wczytywania danych");
                        }
-                       for (int i = 0; i < GUI.userTimeHop + 1; i++) {
-                           double dt = Charts.T.get(1) - Charts.T.get(0);
+                       if (Charts.R.size() < GUI.userTimeHop || Charts.N.size() < GUI.userTimeHop) {
+                           System.err.println("Za mało danych: R.size() = " + Charts.R.size() +"N.size(): " + Charts.N.size()+ ", userTimeHop = " + GUI.userTimeHop);
+                       }
+                       for (int i = 0; i < GUI.sliderTimeHop.getValue(); i++) {
+                           double dt = GUI.mapTimediv.get(GUI.userTimeRange)*Double.parseDouble(GUI.textNumber.getText())/GUI.userTimeHop;
                            Charts.T.add(dt*i);
                            Charts.Rseries.add(dt * i / GUI.mapTimediv.get(GUI.userTimeRange), Charts.R.get(i));
                            Charts.Nseries.add(dt * i / GUI.mapTimediv.get(GUI.userTimeRange), Charts.N.get(i));
                        }
+                       SimN.AnalyticalValues();
                        GUI.histogramsPanel.repaint();
                    }
                }

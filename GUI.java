@@ -27,7 +27,7 @@ import java.util.concurrent.Executors;
 public class GUI extends JFrame {
     Thread simThread;
     static List<String> atomsList;
-    List<Double> atomsLambdaConst;
+    static List<Double> atomsLambdaConst;
     static HashMap<String, Double> mapLambdaConst;
     static HashMap<String, Double> mapTimediv = new HashMap<String, Double>();
     List<String> atomsHalfTime;
@@ -39,7 +39,7 @@ public class GUI extends JFrame {
     JPanel timePanel;
     JButton start;
     JButton stop;
-    JComboBox comboNucleChoser;
+    static JComboBox comboNucleChoser;
     JLabel labelRadioactiveConstant;
     JLabel labelLambda;
     JLabel labelHalfTime;
@@ -48,7 +48,7 @@ public class GUI extends JFrame {
     static JTextField textNumber;
     static JComboBox comboTimeChoser;
     JLabel sliderValueTimeHop;
-    JSlider sliderTimeHop;
+    static JSlider sliderTimeHop;
     JLabel sliderValueStartNucle;
     static JSlider sliderStartNucle;
     static double userLambdaConst;
@@ -278,6 +278,10 @@ public class GUI extends JFrame {
 
 
     }
+
+
+
+
     public class SliderStartNucleChangeListener implements ChangeListener{
 
         @Override
