@@ -1,7 +1,5 @@
 package Main;
 
-import org.jfree.chart.ChartPanel;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -9,7 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.sql.Statement;
 import java.sql.*;
 
 public class save {
@@ -49,7 +46,7 @@ public class save {
         Menu.itemSaveData.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-               //String savetext = SimN.N.toString() + "\n"+ SimN.R.toString()+"\n"+SimN.T.toString();
+
                StringBuilder savetext = new StringBuilder();
                savetext.append(GUI.comboNucleChoser.getSelectedItem().toString() + "\n");
                savetext.append(GUI.textNumber.getText().toString() + "\n");
@@ -90,37 +87,53 @@ public class save {
             @Override
             public void actionPerformed(ActionEvent e) {
 
+                new Thread(() -> {
+                    try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
 
-                try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)){
-                    String tableName = createTable(conn);
-                    String sql = "INSERT INTO "+tableName+" (T, N, R) VALUES (?, ?, ?)";
-                    PreparedStatement stmt = conn.prepareStatement(sql);
-                    for (int i = 0; i < Charts.T.size(); i++) {
-                        Object czas = Charts.T.get(i);
-                        Object nuklidy = Charts.N.get(i);
-                        Object aktywnosc = Charts.R.get(i);
+                        String tableName = createTable(conn);
 
-                        stmt.setString(1, czas.toString());
-                        stmt.setString(2, nuklidy.toString());
-                        stmt.setString(3, aktywnosc.toString());
+                        String sql1 = "INSERT INTO " + tableName + " (nuclid, Text, dt, Iterations, N0) VALUES (?, ?, ?, ?, ?)";
+                        PreparedStatement ps = conn.prepareStatement(sql1);
 
-                        stmt.addBatch();
+                        ps.setString(1, GUI.comboNucleChoser.getSelectedItem().toString());
+                        ps.setString(2, GUI.textNumber.getText().toString());
+                        ps.setString(3, GUI.comboTimeChoser.getSelectedItem().toString());
+                        ps.setInt(4, GUI.sliderTimeHop.getValue());
+                        ps.setInt(5, GUI.sliderStartNucle.getValue());
+
+                        ps.executeUpdate();
+                        ps.close();
+
+                        String sql2 = "INSERT INTO " + tableName + " (T, N, R) VALUES (?, ?, ?)";
 
 
+                        PreparedStatement stmt = conn.prepareStatement(sql2);
+
+                        for (int i = 0; i < Charts.T.size(); i++) {
+                            double czas = Charts.T.get(i);
+                            double nuklidy = Charts.N.get(i);
+                            double aktywnosc = Charts.R.get(i);
+
+                            stmt.setDouble(1, czas);
+                            stmt.setDouble(2, nuklidy);
+                            stmt.setDouble(3, aktywnosc);
+
+                            stmt.addBatch();
+
+
+                        }
+                        stmt.executeBatch(); // Wysłanie danych
+                        JOptionPane.showMessageDialog(null, "Dane zostały zapisane do bazy MySQL!");
+                        if (conn != null) {
+                            conn.close();
+                        }
+                        if (stmt != null) stmt.close();
+
+
+                    } catch (SQLException ex) {
+                        JOptionPane.showMessageDialog(null, "Błąd podczas zapisu do bazy MySQL.");
                     }
-                    stmt.executeBatch(); // Wysłanie danych
-                    JOptionPane.showMessageDialog(null, "Dane zostały zapisane do bazy MySQL!");
-                    if (conn != null) {
-                        conn.close();
-                    }
-                    if (stmt != null) stmt.close();
-
-
-                }
-                catch (SQLException ex) {
-                    ex.printStackTrace();
-                    JOptionPane.showMessageDialog(null, "Błąd podczas zapisu do bazy MySQL.");
-                }
+                }).start();
             }
         });
 
@@ -131,22 +144,38 @@ public class save {
         String userTableName = JOptionPane.showInputDialog("Podaj nazwę nowej tabeli:");
 
         if (userTableName != null && userTableName.matches("[a-zA-Z0-9_]+")) {
-            String sql = "CREATE TABLE IF NOT EXISTS `" + userTableName + "` (" +
+            String sql = "CREATE TABLE `" + userTableName + "` (" +
                     "id INT AUTO_INCREMENT PRIMARY KEY," +
-                    "T VARCHAR(50)," +
-                    "N VARCHAR(50)," +
-                    "R VARCHAR(50)" +
+                    "T DOUBLE," +
+                    "N DOUBLE," +
+                    "R DOUBLE," +
+                    "nuclid Varchar(20)," +
+                    "Text Varchar(20)," +
+                    "dt Varchar(20)," +
+                    "Iterations INT," +
+                    "N0 INT" +
                     ")";
 
-            try (Statement stmt = conn.createStatement()) {
-                stmt.execute(sql);
-                JOptionPane.showMessageDialog(null, "Tabela '" + userTableName + "' została utworzona!");
+            try (PreparedStatement prep = conn.prepareStatement(sql)) {
+                prep.executeUpdate();
 
             } catch (SQLException ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Błąd podczas tworzenia tabeli!");
+                if (ex.getMessage().contains("already exists")) {
+                    JOptionPane.showMessageDialog(null, "Tabela '" + userTableName + "' już istnieje.");
+                    try {
+                        throw new SQLException("Tabela już istnieje", "42S01");
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                else {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Błąd podczas tworzenia tabeli!");
+                }
+
             }
-        } else {
+        }
+        else {
             JOptionPane.showMessageDialog(null, "Nieprawidłowa nazwa tabeli!");
         }
         return userTableName;

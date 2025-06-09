@@ -28,7 +28,6 @@ public class Charts extends JPanel {
     static XYSeries Rseries;
     static XYSeries NseriesAnali;
     static XYSeries RseriesAnali;
-    //XYSeries Poisson;
     static XYSeriesCollection Rcollection;
     static XYSeriesCollection Ncollection;
     static XYPlot plotN;
@@ -38,9 +37,6 @@ public class Charts extends JPanel {
     static ChartPanel chartPanel2;
     static ChartPanel chartPanel1;
     public Charts() {
-
-
-
 
         chartParticleNumber = ChartFactory.createXYLineChart(
                 "Liczba pozostałych nuklidów w czasie",
@@ -79,7 +75,6 @@ public class Charts extends JPanel {
 
         NseriesAnali = new XYSeries("N Analityczne");
         RseriesAnali = new XYSeries("R Analityczne");
-        //Poisson = new XYSeries("Poisson");
 
         Ncollection = new XYSeriesCollection();
         Ncollection.addSeries(Nseries);
@@ -88,7 +83,6 @@ public class Charts extends JPanel {
 
         Rcollection = new XYSeriesCollection();
         Rcollection.addSeries(Rseries);
-        //Rcollection.addSeries(Poisson);
 
 
 

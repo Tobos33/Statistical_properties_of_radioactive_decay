@@ -1,10 +1,10 @@
 package Main;
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.sql.*;
+
 
 public class LoadFile {
     private static final String DB_URL = "jdbc:mysql://sql7.freesqldatabase.com/sql7783889";
@@ -23,7 +23,6 @@ public class LoadFile {
                        File fileToLoad = chooser.getSelectedFile();
 
 
-                       // Wyczyść obecne dane
                        Charts.T.clear();
                        Charts.N.clear();
                        Charts.R.clear();
@@ -45,12 +44,11 @@ public class LoadFile {
                            while ((line = reader.readLine()) != null) {
                                lineNumber++;
 
-                               // Pomijamy nagłówki
                                if (lineNumber <= 2 || line.trim().isEmpty()) continue;
 
 
 
-                               // Rozdziel kolumny – wielokrotne spacje/taby
+
                                String[] parts = line.trim().split("\\s+");
 
                                if (parts.length >= 2) {
@@ -91,58 +89,71 @@ public class LoadFile {
 
                @Override
                public void actionPerformed(ActionEvent e) {
-                   try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-                        Statement stmt = conn.createStatement()) {
+                   if(Charts.Nseries != null) Charts.Nseries.clear();
+                   if(Charts.Rseries != null) Charts.Rseries.clear();
+                   Charts.T.clear();
+                   Charts.N.clear();
+                   Charts.R.clear();
+                   new Thread(() -> {
+                       try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+                            Statement stmt = conn.createStatement()) {
 
 
-                        String tableName = JOptionPane.showInputDialog("Podaj nazwę tabeli, z której chcesz pobrać dane:");
+                           String tableName = JOptionPane.showInputDialog("Podaj nazwę tabeli, z której chcesz pobrać dane:");
 
-                        if (tableName == null || tableName.trim().isEmpty()) {
-                            JOptionPane.showMessageDialog(null, "Nie podano nazwy tabeli.");
-                            return;
-                        }
-
-                        // Wyczyść obecne dane
-                        Charts.T.clear();
-                        Charts.N.clear();
-                        Charts.R.clear();
-
-                        if (Charts.Nseries != null) Charts.Nseries.clear();
-                        if (Charts.Rseries != null) Charts.Rseries.clear();
+                           if (tableName == null || tableName.trim().isEmpty()) {
+                               JOptionPane.showMessageDialog(null, "Nie podano nazwy tabeli.");
+                               return;
+                           }
 
 
+                           if (Charts.Nseries != null) Charts.Nseries.clear();
+                           if (Charts.Rseries != null) Charts.Rseries.clear();
 
-                       String sql = "SELECT T, N, R FROM `" + tableName + "`";
-                       ResultSet rs = stmt.executeQuery(sql);
+                           String sql1 = "SELECT nuclid, Text, dt, Iterations, N0 From `" + tableName + "`";
+                           ResultSet rs1 = stmt.executeQuery(sql1);
 
-                       while (rs.next()) {
-                           double czas = rs.getDouble("T");
-                           double nuklidy = rs.getDouble("N");
-                           double aktywnosc = rs.getDouble("R");
+                           if (rs1.next()) {
+                               GUI.comboNucleChoser.setSelectedItem(rs1.getString("nuclid"));
+                               GUI.textNumber.setText(rs1.getString("Text"));
+                               GUI.comboTimeChoser.setSelectedItem(rs1.getString("dt"));
+                               GUI.sliderTimeHop.setValue(rs1.getInt("Iterations"));
+                               GUI.sliderStartNucle.setValue(rs1.getInt("N0"));
+                           } else {
+                               JOptionPane.showMessageDialog(null, "Brak danych w tabeli: " + tableName);
+                           }
+                           rs1.close();
 
-                           Charts.T.add(czas);
-                           Charts.N.add(nuklidy);
-                           Charts.R.add(aktywnosc);
+
+                           String sql = "SELECT T, N, R FROM `" + tableName + "`";
+                           ResultSet rs = stmt.executeQuery(sql);
+
+                           while (rs.next()) {
+                               double czas = rs.getDouble("T");
+                               double nuklidy = rs.getDouble("N");
+                               double aktywnosc = rs.getDouble("R");
+
+                               Charts.T.add(czas);
+                               Charts.N.add(nuklidy);
+                               Charts.R.add(aktywnosc);
+                           }
+                           rs.close();
+
+
+                       } catch (SQLException ex) {
+                           ex.printStackTrace();
+                           JOptionPane.showMessageDialog(null, "Błąd podczas pobierania danych z bazy.");
+                           return;
                        }
 
-                       rs.close();
-
-
-                   } catch (SQLException ex) {
-                       ex.printStackTrace();
-                       JOptionPane.showMessageDialog(null, "Błąd podczas pobierania danych z bazy.");
-                       return;
-                   }
-
-                   // Tworzenie serii do wykresów
-                   for (int i = 0; i < GUI.userTimeHop + 1 && i < Charts.T.size(); i++) {
-                       double dt = Charts.T.get(1) - Charts.T.get(0);
-                       Charts.Rseries.add(dt * i / GUI.mapTimediv.get(GUI.userTimeRange), Charts.R.get(i));
-                       Charts.Nseries.add(dt * i / GUI.mapTimediv.get(GUI.userTimeRange), Charts.N.get(i));
-                   }
-
-                   GUI.histogramsPanel.repaint();
-                   JOptionPane.showMessageDialog(null, "Dane zostały wczytane z bazy danych!");
+                       for (int i = 0; i < GUI.userTimeHop && i < Charts.T.size() - 1; i++) {
+                           double dt = GUI.mapTimediv.get(GUI.userTimeRange) * Double.parseDouble(GUI.textNumber.getText()) / GUI.userTimeHop;
+                           Charts.Rseries.add(dt * i / GUI.mapTimediv.get(GUI.userTimeRange), Charts.R.get(i + 1));
+                           Charts.Nseries.add(dt * i / GUI.mapTimediv.get(GUI.userTimeRange), Charts.N.get(i + 1));
+                       }
+                       SimN.AnalyticalValues();
+                       GUI.histogramsPanel.repaint();
+                   }).start();
                }
            });
        }

@@ -1,27 +1,14 @@
 package Main;
-import javax.swing.*;
-import org.jfree.chart.*;
-import org.jfree.chart.labels.*;
-import org.jfree.chart.plot.*;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
 
-import javax.swing.Timer;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.lang.Math;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.List;
-import javax.swing.text.*;
-import java.text.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 
 public class GUI extends JFrame {
@@ -53,7 +40,6 @@ public class GUI extends JFrame {
     static JSlider sliderStartNucle;
     static double userLambdaConst;
     static String userTimeRange;
-    //static double userTimeNumber = 10.0;
     static int userTimeHop;
     static double userStartNucle = Math.pow(10, 6);
     Menu menuBar;
@@ -103,12 +89,40 @@ public class GUI extends JFrame {
         start.addActionListener(e -> startSimulation());
 
         atomsList = new ArrayList<String>();
-        atomsList.add("węgiel C14");
-        atomsList.add("uran-238");
+        atomsList.add("polon Po-218");
+        atomsList.add("tryt H-3");
+        atomsList.add("lit Li-8");
+        atomsList.add("bor B-12");
+        atomsList.add("wegiel C-14");
+        atomsList.add("azot N-13");
+        atomsList.add("azot N-16");
+        atomsList.add("fluor F-18");
+        atomsList.add("potas K-40");
+        atomsList.add("technet Tc-99");
+        atomsList.add("jod I-131");
+
+        atomsList.add("radon Rn-222");
+        atomsList.add("rad Ra-226");
+        atomsList.add("uran U-238");
+
 
         atomsLambdaConst = new ArrayList<Double>();
-        atomsLambdaConst.add(Math.log(2)/(5.57*3.6*2.4*3.65));
-        atomsLambdaConst.add(Math.log(2)/(4.5*3.6*2.4*3.65)*Math.pow(10,-6)); //9+3+1+2 = 15 zer
+        atomsLambdaConst.add(Math.log(2)/(45)*Math.pow(10, 9));
+        atomsLambdaConst.add(Math.log(2)/(389)*Math.pow(10, 3));
+        atomsLambdaConst.add(Math.log(2)/0.8*Math.pow(10,9));
+        atomsLambdaConst.add(Math.log(2)/0.02*Math.pow(10,9));
+        atomsLambdaConst.add(Math.log(2)/(5.73*3.6*2.4*3.65));
+        atomsLambdaConst.add(Math.log(2)/(597.9)*Math.pow(10,9));
+        atomsLambdaConst.add(Math.log(2)/(7.2)*Math.pow(10,9));
+        atomsLambdaConst.add(Math.log(2)/(1.10*6)*Math.pow(10,6));
+        atomsLambdaConst.add(Math.log(2)/(1.3*3.6*2.4*3.65)*Math.pow(10,-6));
+        atomsLambdaConst.add(Math.log(2)/(6*3.6)*Math.pow(10,6));
+        atomsLambdaConst.add(Math.log(2)/(693)*Math.pow(10,6));
+
+        atomsLambdaConst.add(Math.log(2)/(330)*Math.pow(10,6));
+        atomsLambdaConst.add(Math.log(2)/(50));
+        atomsLambdaConst.add(Math.log(2)/(4.5*3.6*2.4*3.65)*Math.pow(10,-6));
+
 
         mapLambdaConst = new HashMap<String, Double>();
         for(int i= 0; i<atomsList.size();i++){
@@ -116,7 +130,19 @@ public class GUI extends JFrame {
         }
 
         atomsHalfTime = new ArrayList<String>();
-        atomsHalfTime.add("5570 lat");
+        atomsHalfTime.add("45 s");
+        atomsHalfTime.add("12.32 lata");
+        atomsHalfTime.add("0.8 s");
+        atomsHalfTime.add("0.02 s");
+        atomsHalfTime.add("5730 lat");
+        atomsHalfTime.add("10 min");
+        atomsHalfTime.add("7.2 s");
+        atomsHalfTime.add("110 min");
+        atomsHalfTime.add("1.3xE9 lat");
+        atomsHalfTime.add("6 h");
+        atomsHalfTime.add("8 dni");
+        atomsHalfTime.add("3.8 dnia");
+        atomsHalfTime.add("1600 lat");
         atomsHalfTime.add("4.5xE9 lat");
 
         mapHalfTime = new HashMap<String, String>();
@@ -132,7 +158,7 @@ public class GUI extends JFrame {
         JPanel nucleChoserPanel = new JPanel();
         optionsPanel.add(nucleChoserPanel);
         nucleChoserPanel.setLayout(new BorderLayout());
-        comboNucleChoser = new JComboBox(new Vector(mapLambdaConst.keySet()));
+        comboNucleChoser = new JComboBox(atomsList.toArray());
         JPanel labelNucleChoserPanel = new JPanel();
         labelNucleChoserPanel.setLayout(new FlowLayout());
         JLabel labelNucleChoser = new JLabel("Wybierz nuklid (domyślnie węgiel):");
@@ -144,9 +170,9 @@ public class GUI extends JFrame {
         comboNucleChoserPanel.add(comboNucleChoser);
         comboNucleChoser.setPreferredSize( new Dimension(250, 25));
 
-        labelLambda = new JLabel(String.valueOf((mapLambdaConst.get("węgiel C14")*Math.pow(10, -9))));
-        userLambdaConst = mapLambdaConst.get("węgiel C14"); // DOMYSLNIE WEGIEL MA BYC WYBRANY
-        labelT = new JLabel(mapHalfTime.get("węgiel C14"));
+        labelLambda = new JLabel(String.valueOf((mapLambdaConst.get("polon Po-218")*Math.pow(10, -9))));
+        userLambdaConst = mapLambdaConst.get("polon Po-218"); // DOMYSLNIE WEGIEL MA BYC WYBRANY
+        labelT = new JLabel(mapHalfTime.get("polon Po-218"));
         comboNucleChoser.addActionListener(new ActionListener() {
 
             @Override
@@ -209,25 +235,17 @@ public class GUI extends JFrame {
                 userTimeRange = comboTimeChoser.getSelectedItem().toString();
             }
         });
-        /*textNumber.addActionListener(new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                userTimeNumber =  Double.parseDouble(textNumber.getText()); //DO NAPRAWIENIA, string na float sie nie skonwertuje
-            }
-        });*/
 
         sliderTimeHop = new JSlider(10,100,55 );
         sliderTimeHop.setMajorTickSpacing(10);
         sliderTimeHop.setPaintTicks(true);
         Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
         labelTable.put(10, new JLabel("10"));
-        //labelTable.put(50, new JLabel("50"));
         labelTable.put(100, new JLabel("100"));
         sliderTimeHop.setLabelTable(labelTable);
         sliderTimeHop.setPaintLabels(true);
         sliderTimeHop.addChangeListener(new SliderTimeHopChangeListener());
-        //sliderTimeHop.setPreferredSize(new Dimension(425, 70));
         JPanel timeHopPanel = new JPanel();
         timeHopPanel.setLayout(new BorderLayout());
         optionsPanel.add(timeHopPanel);
@@ -247,7 +265,7 @@ public class GUI extends JFrame {
 
 
 
-        sliderStartNucle = new JSlider(4,8,6 );    //TRZEBA BEDZIE podnosić 10 do potegi sczytanej ze slidera
+        sliderStartNucle = new JSlider(4,8,6 );
         sliderStartNucle.setMajorTickSpacing(1);
         sliderStartNucle.setPaintTicks(true);
         Hashtable<Integer, JLabel> labelTable1 = new Hashtable<>();
@@ -262,16 +280,12 @@ public class GUI extends JFrame {
         optionsPanel.add(startNuclePanel);
         JLabel labelStartNucle  = new JLabel("Początkowa liczba nuklidów:");
         sliderValueStartNucle = new JLabel("10e" + String.format("%d", sliderStartNucle.getValue()));
-        //JLabel labelStartNucle1  = new JLabel("                        ");
-        //JLabel labelStartNucle2  = new JLabel("              ");
         JPanel labelStartNuclePanel = new JPanel();
         labelStartNuclePanel.setLayout(new FlowLayout());
         startNuclePanel.add(labelStartNuclePanel, BorderLayout.NORTH);
         labelStartNuclePanel.add(labelStartNucle);
         labelStartNuclePanel.add(sliderValueStartNucle);
         startNuclePanel.add(sliderStartNucle, BorderLayout.CENTER);
-        //startNuclePanel.add(labelStartNucle1, BorderLayout.EAST);
-        //startNuclePanel.add(labelStartNucle2, BorderLayout.WEST);
 
 
 
@@ -305,22 +319,21 @@ public class GUI extends JFrame {
     }
 
     public void startSimulation() {
+        if(simThread != null) {
+            simThread.interrupt();
+        }
         SimN simulation = new SimN();
         simThread = new Thread(simulation);
         simThread.start();
         simulation.AnalyticalValues();
         histogramsPanel.repaint();
-
-
-
-
     }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable(){
             public void run() {
                 GUI Frame = new GUI();
-                //System.out.println(" "+userTimeHop);
+                System.out.println(Charts.N);
                 Frame.setVisible(true);
             }
         });

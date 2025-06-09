@@ -12,12 +12,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Menu extends JMenuBar {
-    JMenuBar menuBar;
     JMenu menu;
     JMenu menuChartCustom;
     JMenu subMenuSaveData;
@@ -28,6 +27,7 @@ public class Menu extends JMenuBar {
     static JMenuItem itemSaveChart;
     static JMenuItem itemOpen;
     static JMenuItem itemLoadDataSQL;
+    static JMenuItem itemShowTables;
     JMenuItem itemNDataColor;
     JMenuItem itemRDataColor;
     JMenuItem itemNAnaliDataColor;
@@ -81,10 +81,10 @@ public class Menu extends JMenuBar {
         subMenuSaveData = new JMenu("Zapisz dane...");
         menu.add(subMenuSaveData);
 
-        itemSaveData = new JMenuItem("Zapisz dane na dysku");
+        itemSaveData = new JMenuItem("jako txt");
         subMenuSaveData.add(itemSaveData);
 
-        itemSaveDataSQL = new JMenuItem("Zapisz dane do bazy SQL");
+        itemSaveDataSQL = new JMenuItem("do bazy SQL");
         subMenuSaveData.add(itemSaveDataSQL);
 
 
@@ -101,6 +101,9 @@ public class Menu extends JMenuBar {
 
         itemLoadDataSQL = new JMenuItem("z bazy SQL");
         subMenuLoadData.add(itemLoadDataSQL);
+
+        itemShowTables = new JMenuItem("Pokaż dostępne tabele SQL");
+        subMenuLoadData.add(itemShowTables);
 
         itemChartBackgroundGrid.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -153,7 +156,7 @@ public class Menu extends JMenuBar {
         Poisson.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 XYSeries PoissonSeries = new XYSeries("Poisson");
-                XYSeries PoissonSeriesAnali = new XYSeries("Poisson Anali");
+                XYSeries PoissonSeriesAnali = new XYSeries("Poisson Analityczny");
                 XYSeriesCollection PoissonCollection = new XYSeriesCollection();
                 PoissonCollection.addSeries(PoissonSeries);
                 PoissonCollection.addSeries(PoissonSeriesAnali);
@@ -249,6 +252,50 @@ public class Menu extends JMenuBar {
                 }
             }
         });
+
+        Menu.itemShowTables.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                StringBuilder tablesList = new StringBuilder();
+                new Thread(() -> {
+                    try (Connection conn = DriverManager.getConnection(
+                            "jdbc:mysql://sql7.freesqldatabase.com/sql7783889",
+                            "sql7783889",
+                            "Yss3mGrEhv");
+                         Statement stmt = conn.createStatement()) {
+
+                        String sql = "SHOW TABLES";
+                        ResultSet rs = stmt.executeQuery(sql);
+
+                        while (rs.next()) {
+                            String tableName = rs.getString(1);
+                            tablesList.append(tableName).append("\n");
+                        }
+
+                        JTextArea textArea = new JTextArea(tablesList.toString());
+                        textArea.setEditable(false);
+                        textArea.setLineWrap(true);
+                        textArea.setWrapStyleWord(true);
+
+                        JScrollPane scrollPane = new JScrollPane(textArea);
+                        scrollPane.setPreferredSize(new Dimension(150, 150));
+
+                        rs.close();
+
+                        if (tablesList.length() == 0) {
+                            JOptionPane.showMessageDialog(null, "Brak tabel w bazie danych.");
+                        } else {
+                            JOptionPane.showMessageDialog(null, scrollPane, "Lista dostępnych baz danych", JOptionPane.INFORMATION_MESSAGE);
+                        }
+
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(null, "Błąd przy pobieraniu listy tabel.");
+                    }
+                }).start();
+            }
+        });
+
 
 
     }

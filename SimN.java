@@ -1,31 +1,16 @@
 package Main;
 
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
-import javax.swing.*;
-import java.awt.*;
-import java.util.*;
-import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static Main.Charts.*;
 import static Main.GUI.sliderStartNucle;
-import java.awt.geom.Ellipse2D;
 
 public class SimN implements Runnable {
-    //Double R0 = GUI.userLambdaConst* Math.pow(10,sliderStartNucle.getValue());
-    static Double Np = Math.pow(10, sliderStartNucle.getValue());
-    static Double Rp;
-    static double dt;
+    Double Np = Math.pow(10, sliderStartNucle.getValue());
+    Double Rp;
+    double dt;
 
     public SimN() {
-
     }
 
 
@@ -42,9 +27,7 @@ public class SimN implements Runnable {
         R.clear();
         T.clear();
 
-        if(Charts.Rseries != null)
         Charts.Rseries.clear();
-        if(Charts.Nseries != null)
         Charts.Nseries.clear();
 
 
@@ -113,8 +96,6 @@ public class SimN implements Runnable {
     public void CalculationN() {
 
         dt = GUI.mapTimediv.get(GUI.userTimeRange)*Double.parseDouble(GUI.textNumber.getText())/GUI.userTimeHop;
-        //R0 = GUI.userLambdaConst* Math.pow(10, sliderStartNucle.getValue())*Math.pow(10, -9);
-        //R.add(0.0);
         N.add(Math.pow(10, sliderStartNucle.getValue()));
         double los;
         P.clear();
