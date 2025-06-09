@@ -28,7 +28,7 @@ public class Menu extends JMenuBar {
     static JMenuItem itemSaveData;
     JMenuItem itemSaveDataSQL;
     static JMenuItem itemSaveChart;
-    JMenuItem itemOpen;
+    static JMenuItem itemOpen;
     JMenuItem itemNDataColor;
     JMenuItem itemRDataColor;
     JMenuItem itemNAnaliDataColor;
@@ -93,7 +93,7 @@ public class Menu extends JMenuBar {
         menu.add(itemSaveChart);
 
 
-        itemOpen = new JMenuItem("Otwórz");
+        itemOpen = new JMenuItem("Wczytaj z pliku txt");
         menu.add(itemOpen);
 
         itemChartBackgroundGrid.addActionListener(new ActionListener() {

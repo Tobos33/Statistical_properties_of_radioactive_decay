@@ -22,8 +22,8 @@ public class SimN implements Runnable {
     Double Rp;
     static JFreeChart chartParticleNumber;
     static JFreeChart chartActivity;
-    XYSeries Nseries;
-    XYSeries Rseries;
+    static XYSeries Nseries;
+    static XYSeries Rseries;
     static XYSeries NseriesAnali;
     static XYSeries RseriesAnali;
     //XYSeries Poisson;

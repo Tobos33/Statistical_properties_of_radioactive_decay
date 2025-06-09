@@ -49,7 +49,7 @@ public class GUI extends JFrame {
     JLabel labelT;
     JLabel time;
     static JTextField textNumber;
-    JComboBox comboTimeChoser;
+    static JComboBox comboTimeChoser;
     JLabel sliderValueTimeHop;
     JSlider sliderTimeHop;
     JLabel sliderValueStartNucle;
@@ -100,6 +100,7 @@ public class GUI extends JFrame {
         this.setJMenuBar(menuBar);
 
         save savingCharts = new save();
+        LoadFile loadingFiles = new LoadFile();
 
 
 

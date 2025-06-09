@@ -43,7 +43,17 @@ public class save {
         Menu.itemSaveData.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-               String savetext = SimN.N.toString() + "\n"+ SimN.R.toString()+"\n"+SimN.T.toString();
+               //String savetext = SimN.N.toString() + "\n"+ SimN.R.toString()+"\n"+SimN.T.toString();
+               StringBuilder savetext = new StringBuilder();
+               savetext.append(String.format("%-12s %-20s %-15s\n", "Czas[" + GUI.comboTimeChoser.getSelectedItem()+"]", "Liczba nuklidów", "Aktywność [nBq]"));
+               savetext.append("--------------------------------------------------------\n");
+
+                for (int i = 0; i < SimN.T.size(); i++) {
+                    Object czas = SimN.T.get(i);
+                    Object nuklidy = SimN.N.get(i);
+                    Object aktywnosc = SimN.R.get(i);
+                    savetext.append(String.format("%-12s %-20s %-15s\n", czas.toString(), nuklidy.toString(), aktywnosc.toString()));
+                }
 
                 JFileChooser chooser = new JFileChooser();
                 int wynik = chooser.showSaveDialog(null);
@@ -56,7 +66,7 @@ public class save {
 
 
                     try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileToSave))) {
-                        writer.write(savetext);
+                        writer.write(savetext.toString());
                         JOptionPane.showMessageDialog(null, "Dane zostały zapisane!");
                     } catch (IOException ex) {
                         JOptionPane.showMessageDialog(null, "Błąd podczas zapisu danych");
