@@ -333,7 +333,6 @@ public class GUI extends JFrame {
         SwingUtilities.invokeLater(new Runnable(){
             public void run() {
                 GUI Frame = new GUI();
-                System.out.println(Charts.N);
                 Frame.setVisible(true);
             }
         });

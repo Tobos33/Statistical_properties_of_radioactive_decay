@@ -179,7 +179,6 @@ public class Menu extends JMenuBar {
                 }
 
                 double lambda = mean(Charts.P);
-                System.out.println(lambda);
 
                 for(int i = 0; i< 20; i++){
                     PoissonSeries.add((double)M.get(i), ((double)K.get(i))/(GUI.userTimeHop+1));
